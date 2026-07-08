@@ -18,7 +18,8 @@
 .input:focus,
 .input:focus-within {
     background: transparent;
-    border-color: var(--overlay-50);
+    border-color: var(--border-focus);
+    box-shadow: var(--shadow-input-focus);
 }
 
 .input:disabled {
@@ -27,7 +28,7 @@
 }
 
 .input::placeholder {
-    color: var(--text-disabled);
+    color: var(--text-subtle);
 }
 
 .input[data-emphasis="strong"] {
@@ -106,7 +107,8 @@
 
 .inputWrapper:focus-within {
     background: transparent;
-    border-color: var(--overlay-50);
+    border-color: var(--border-focus);
+    box-shadow: var(--shadow-input-focus);
 }
 
 .inputWrapper[data-disabled="true"] {
@@ -206,7 +208,7 @@
 }
 
 .inputWrapper:focus-within .spinner {
-    border-left-color: var(--overlay-50);
+    border-left-color: var(--border-focus);
 }
 
 .spinnerButton {
@@ -235,7 +237,7 @@
 }
 
 .inputWrapper:focus-within .spinnerButton + .spinnerButton {
-    border-top-color: var(--overlay-50);
+    border-top-color: var(--border-focus);
 }
 
 .spinnerButton:hover {

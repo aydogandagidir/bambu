@@ -6,11 +6,11 @@
     display: inline-flex;
     align-items: center;
     gap: var(--space-4xs);
-    background: var(--bg-surface-1);
+    background: var(--bg-surface-2);
     border: 1px solid var(--border);
     border-radius: 9999px; /* pill shape */
-    padding: 4px;
-    box-shadow: var(--shadow-sm);
+    padding: var(--space-2xs);
+    box-shadow: var(--shadow-tooltip);
     z-index: 50; /* Above canvas, below modals */
 }
 
@@ -18,5 +18,5 @@
     min-width: 44px;
     justify-content: center;
     font-variant-numeric: tabular-nums;
-    font-size: 12px;
+    font-size: var(--text-m);
 }

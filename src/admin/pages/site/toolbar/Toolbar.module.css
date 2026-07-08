@@ -6,15 +6,15 @@
     flex-direction: column;
     width: 250px;
     height: 100vh;
-    padding: 12px 8px;
+    padding: var(--space-xl) var(--space-m);
     gap: var(--space-s);
     flex-shrink: 0;
     position: relative;
     z-index: 30;
     user-select: none;
-    background: var(--bg-surface-1);
-    border-right: 1px solid var(--border);
-    transition: width 0.2s cubic-bezier(0.2, 0, 0, 1);
+    background: var(--bg-surface);
+    border-right: 1px solid var(--border-muted);
+    transition: width var(--duration-slow) var(--ease);
     overflow: hidden;
 }
 
@@ -42,8 +42,8 @@
     align-items: center;
     justify-content: space-between;
     height: 32px;
-    margin-bottom: 8px;
-    padding: 0 4px;
+    margin-bottom: var(--space-m);
+    padding: 0 var(--space-2xs);
 }
 
 .brandGroupContent {
@@ -75,19 +75,19 @@
 .navGroup {
     display: flex;
     flex-direction: column;
-    gap: 1px;
+    gap: var(--space-px);
     flex-shrink: 0;
 }
 
 .navSectionLabel {
     display: flex;
     align-items: center;
-    padding: 4px 6px;
-    margin-top: 12px;
-    margin-bottom: 2px;
+    padding: var(--space-2xs) var(--space-s);
+    margin-top: var(--space-xl);
+    margin-bottom: var(--space-4xs);
     color: var(--text-muted);
-    font-size: 11.5px;
-    font-weight: 500;
+    font-size: var(--text-s);
+    font-weight: var(--weight-medium);
     user-select: none;
 }
 
@@ -97,11 +97,11 @@
     height: 28px;
     max-width: 140px;
     margin-right: var(--space-3xs);
-    padding: 0 6px;
+    padding: 0 var(--space-s);
     overflow: hidden;
     color: var(--text-muted);
-    font-size: 12px;
-    font-weight: 600;
+    font-size: var(--text-m);
+    font-weight: var(--weight-semibold);
     text-overflow: ellipsis;
     white-space: nowrap;
     flex-shrink: 0;
@@ -131,15 +131,15 @@
 .adminLink {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--space-s);
     height: 28px;
-    padding: 0 6px;
+    padding: 0 var(--space-s);
     border-radius: var(--input-radius);
     color: var(--text-subtle);
-    font-size: 12px;
-    font-weight: 400;
+    font-size: var(--text-m);
+    font-weight: var(--weight-regular);
     text-decoration: none;
-    transition: background-color 0.1s ease, color 0.1s ease;
+    transition: background-color var(--duration-fast) var(--ease), color var(--duration-fast) var(--ease);
 }
 
 .adminLink:hover {
@@ -160,14 +160,14 @@
 .activeSection {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--space-s);
     height: 28px;
-    padding: 0 6px;
+    padding: 0 var(--space-s);
     border-radius: var(--input-radius);
     background: color-mix(in srgb, var(--bg-surface-2) 80%, transparent);
     color: var(--text-bright);
-    font-size: 12px;
-    font-weight: 500;
+    font-size: var(--text-m);
+    font-weight: var(--weight-medium);
 }
 
 .activeSection svg {
@@ -216,20 +216,20 @@
 .pluginButton {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: var(--space-s);
     height: 28px;
     width: 100%;
-    padding: 0 6px;
+    padding: 0 var(--space-s);
     border: none;
     border-radius: var(--input-radius);
     background: transparent;
     color: var(--text-subtle);
-    font-size: 12px;
-    font-weight: 400;
+    font-size: var(--text-m);
+    font-weight: var(--weight-regular);
     font-family: inherit;
     white-space: nowrap;
     cursor: pointer;
-    transition: background-color 0.1s ease, color 0.1s ease;
+    transition: background-color var(--duration-fast) var(--ease), color var(--duration-fast) var(--ease);
 }
 
 .pluginButton:hover {

@@ -2,13 +2,13 @@
 
 The visual design system for Instatic — principles, tokens, surfaces, components.
 
-The design is a **two-layer color model**: an achromatic base (surfaces, borders, default text) with a deliberate semantic and categorical color layer on top (numbered accents for identity, state tokens for meaning, canvas neon for selection). Everything is tokenized in `src/styles/globals.css`. Every primitive lives in `src/ui/components/`.
+The design is a **two-layer color model** on the "Deep Ocean" palette: a cold slate-neutral base (surfaces, borders, default text — all one hue family, no competing temperatures) with a deliberate functional color layer on top (the **brand sky accent** for primary actions / focus / active indicators, numbered accents for identity, state tokens for meaning, canvas neon for selection). Everything is tokenized in `src/styles/globals.css`. Every primitive lives in `src/ui/components/`.
 
 ---
 
 ## TL;DR
 
-- **Base is achromatic; color is the layer on top.** Surfaces, borders, and default text are neutral. Color is used to convey **identity** (`--accent-1..10`) and **state** (danger, warning, success, info, canvas selection / hover). Color is never decorative — every colored pixel carries meaning.
+- **Base is one neutral slate family; color is the layer on top.** Surfaces, borders, and default text are Deep Ocean neutrals sharing a single hue temperature. Chromatic color is used to convey **interaction** (`--brand-*`: primary actions, focus rings, links, active nav), **identity** (`--accent-1..10`) and **state** (danger, warning, success, info, canvas selection / hover). Color is never decorative — every colored pixel carries meaning.
 - **Borderless tile cards.** Dashboard widgets and equivalent surfaces sit on a darker parent (`--bg-surface`) with a 1px grid gap, no border, `--card-radius` (16px). The gap reveals the parent and reads as a divider. Hover lifts the surface tone, never the border. Canonical implementation: `src/ui/components/Widget/Widget.module.css`.
 - **Bordered transparent inputs.** Inputs have a 1px white-alpha border, transparent background, and a pill 1em radius. Focus adds an inset achromatic glow.
 - **Floating overlay panels.** Spotlight, popovers, and modals use direct globals: `--bg-surface`, `--overlay-10`, `--panel-radius`, `--panel-blur`, and `--shadow-panel`.
@@ -24,7 +24,7 @@ The design is a **two-layer color model**: an achromatic base (surfaces, borders
 
 ### 1. The base disappears, the meaning appears
 
-The chrome is dark, neutral, and quiet so the user's content and the system's signals are the only things competing for attention. Surfaces, borders, default text — all achromatic. Color is reserved for things that mean something: a green dot says "saved", a peach widget header says "this card is about posts", a neon ring says "the canvas selected this node".
+The chrome is dark, cold-neutral, and quiet so the user's content and the system's signals are the only things competing for attention. Surfaces, borders, default text — all drawn from one slate hue family. Color is reserved for things that mean something: a sky-filled button says "this is the action", a green dot says "saved", a peach widget header says "this card is about posts", a neon ring says "the canvas selected this node".
 
 If a color isn't carrying information, it doesn't belong in the chrome.
 
@@ -32,14 +32,16 @@ If a color isn't carrying information, it doesn't belong in the chrome.
 
 ```text
 ┌────────────────────────────────────────────────────────────────┐
-│  Layer 2 — SEMANTIC + CATEGORICAL COLOR                        │
-│  numbered identity accents, state (danger/warning/               │
+│  Layer 2 — FUNCTIONAL COLOR                                    │
+│  brand sky (--brand-*: primary action, focus, links, active),  │
+│  numbered identity accents, state (danger/warning/             │
 │  success/info), canvas neon (selection/hover)                  │
 ├────────────────────────────────────────────────────────────────┤
-│  Layer 1 — ACHROMATIC BASE                                     │
+│  Layer 1 — DEEP OCEAN NEUTRAL BASE (one slate hue family)      │
 │  --bg-body / --bg-surface / --bg-surface-2..5                    │
 │  --text-bright / --text / --text-muted / --text-subtle           │
-│  --border / --border-muted / --overlay-*                         │
+│  --border-subtle / --border-muted / --border / --border-strong   │
+│  --overlay-* / --scrim-* / --kbd-*                               │
 └────────────────────────────────────────────────────────────────┘
 ```
 
@@ -50,14 +52,15 @@ Both layers are tokenized. Layer 1 is the base every primitive paints itself wit
 The base layer uses six surface tones to convey depth without shadows or gradients on inline content. Lighter surfaces are higher in the stack:
 
 ```text
---bg-body          #000000   ← page bottom (root, behind everything)
---bg-surface     #1b1b1b   ← darker parent of tile cards / sidebar fill
---bg-surface-2   #282828   ← tile cards themselves, panel bodies
---bg-surface-3   #323232   ← hover state for tiles, nested controls
---bg-surface-4   #4a4a4a   ← active state
---bg-surface-5   #605f5f   ← active + focused
---bg-surface-3   #323232   ← hover state, nested controls, chips
+--bg-body        #050b14   ← page bottom (root, behind everything)
+--bg-surface     #0a1120   ← darker parent of tile cards / sidebar fill
+--bg-surface-2   #111827   ← tile cards themselves, panel bodies
+--bg-surface-3   #1f2937   ← hover state for tiles, nested controls
+--bg-surface-4   #374151   ← active state
+--bg-surface-5   #4b5563   ← active + focused
 ```
+
+Borders have their **own ramp** (`--border-subtle` → `--border-strong`), offset half a step above the surface scale so a hairline is visible against both the surface it sits on and the one below it. Never reuse a surface token as a border color.
 
 Hover and active states change **tone**, not border. Reach for the closest tone above the current surface; skip levels only with intent.
 
@@ -79,9 +82,13 @@ This is implemented by `Widget` (`src/ui/components/Widget/`) and `DashboardGrid
 
 ### 5. Inputs wear their borders. Cards don't.
 
-Inputs are the inverse of cards: transparent background with a 1px white-alpha border. Pill radius (1em ≈ 16px). On focus, an inset achromatic glow appears. The border is what defines the input; no fill.
+Inputs are the inverse of cards: transparent background with a 1px white-alpha border. Pill radius (1em ≈ 16px). On focus, the border warms to the brand hue (`--border-focus`) and a soft brand glow appears (`--shadow-input-focus`) — the same treatment on `Input`, `Select`, and `SearchBar`, so "I am focused" always looks identical. The border is what defines the input; no fill.
 
 This split (cards = filled & borderless, inputs = unfilled & bordered) is the load-bearing visual distinction between containers and controls.
+
+### 5b. One interactive accent: the brand sky
+
+`--brand` (#38bdf8) is the single interactive accent. It marks exactly four things: the **primary action** of a view (`Button variant-primary` — brand fill + `--brand-ink` dark text, ≥8:1), the **focus ring** (`--focus-ring`, 2px), **links / active-state text** (`--brand-text` on dark surfaces), and **active navigation indicators**. If two elements on one screen both shout brand, one of them is wrong — demote it to `secondary`/`ghost`.
 
 ### 6. Identity is a color, not a label
 
@@ -127,17 +134,32 @@ All tokens live in `src/styles/globals.css`. Anywhere you need a color, radius, 
 ### Color tokens
 
 ```text
-Base surfaces (achromatic):
-  --bg-body, --bg-surface-3
+Base surfaces (Deep Ocean slate):
+  --bg-body,
   --bg-surface, --bg-surface-2..5
-  --border, --border-muted
-  --border-subtle
+  --border-subtle, --border-muted,
+  --border, --border-strong,
+  --border-focus (brand-tinted input focus border)
   --scrollbar-track, --scrollbar-thumb,
   --scrollbar-thumb-hover
 
-Base text (achromatic):
+Base text (slate neutrals):
   --text-bright, --text, --text-muted,
   --text-subtle, --text-disabled
+
+Brand (the ONE interactive accent):
+  --brand, --brand-hover, --brand-active,
+  --brand-ink (dark text ON brand fills),
+  --brand-text (brand-tinted text on dark surfaces),
+  --brand-10, --brand-20
+
+Motion:
+  --duration-fast, --duration, --duration-slow,
+  --ease, --ease-out
+
+Font weights:
+  --weight-regular, --weight-medium,
+  --weight-semibold, --weight-bold
 
 Fluid admin typography scale:
   --text-3xs, --text-2xs, --text-xs, --text-s, --text-m,
@@ -203,13 +225,13 @@ Charts:
 
 | Token                       | Hex       | Means                          |
 |-----------------------------|-----------|--------------------------------|
-| `--text-bright`      | `#f4f4f5` | Titles, headings, KPIs         |
-| `--text`             | `#ededed` | Primary body text              |
-| `--text-muted`   | `#a1a1aa` | Labels, secondary UI           |
-| `--text-subtle`       | `#787878` | Muted / placeholder            |
-| `--text-disabled`      | `#52525b` | Disabled / very subtle         |
+| `--text-bright`      | `#f7fafd` | Titles, headings, KPIs         |
+| `--text`             | `#e8edf5` | Primary body text              |
+| `--text-muted`   | `#a9b3c6` | Labels, secondary UI           |
+| `--text-subtle`       | `#8b96ab` | Muted labels / placeholders (AA on surfaces up to `-3`) |
+| `--text-disabled`      | `#5d6675` | Disabled state ONLY — never content |
 
-These five are the entire text palette. Add a new tone only by adding a new token.
+These five are the entire text palette. Add a new tone only by adding a new token. `--text-disabled` is exempt from contrast requirements because it may only mark disabled controls; if you're tempted to use it for real content, use `--text-subtle`.
 
 ### Typography tokens — fluid size scale
 
@@ -229,8 +251,9 @@ These are admin tokens. The published-site Framework engine also emits short spa
 |----------------------|-------|--------------------------------------------------------------|
 | `--radius-sm` | 3px   | Tight chips, micro-badges, segmented control inner indicator |
 | `--radius`    | 6px   | Default editor controls, toolbar buttons, ghost menu items   |
+| `--radius-lg` | 8px   | Compact buttons (`size-xs`), tree rows, list tiles           |
 | `--panel-radius`     | 12px  | Floating overlay panels (Spotlight, modals, popovers)        |
-| `--card-radius`      | 16px  | Borderless tile cards (Widget, dashboard cells, module inserter tiles) |
+| `--card-radius`      | 16px  | Tile cards (Widget, dashboard cells, module inserter tiles)  |
 | `--input-radius`     | 1em   | Pill-shaped inputs, classes / property chips                 |
 | `--tooltip-radius`   | 6px   | Tooltips                                                     |
 
@@ -244,12 +267,13 @@ Editor scrollbars are global chrome and stay achromatic. `globals.css` owns `--s
 
 | Token                       | Use                                                     |
 |-----------------------------|---------------------------------------------------------|
-| `--focus-ring`       | Achromatic 1px focus ring (`0 0 0 1px var(--overlay-20)`) |
+| `--focus-ring`       | Brand 2px focus ring (`0 0 0 2px` brand @60%) — visible on every surface of the dark ramp |
 | `--shadow-panel`            | Composite for floating panels: bottom-inset shadow + drop shadow |
 | `--shadow-panel-inset-bottom`| Sub-token: bottom inner shadow                         |
 | `--shadow-panel-drop`       | Sub-token: drop shadow                                  |
-| `--shadow-input-focus`      | Inset composite for focused inputs (achromatic glow)    |
+| `--shadow-input-focus`      | Focused-input composite: 1px brand inset + 3px brand halo. Pairs with `--border-focus`. |
 | `--shadow-tooltip`          | Tooltip drop + inner highlight                          |
+| `--shadow-premium` / `--shadow-premium-hover` | Glass hero tiles (Widget, onboarding bento) — see "Glass tiles" below |
 
 Use `--shadow-panel` directly when you need a floating-panel feel; don't recompose from the sub-tokens.
 
@@ -260,12 +284,15 @@ Use `--shadow-panel` directly when you need a floating-panel feel; don't recompo
 --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 ```
 
-Type **sizes** are per-component and don't yet have a token scale. The patterns in actual use:
+Font **weights** come from the four weight tokens — `--weight-regular` (400), `--weight-medium` (500), `--weight-semibold` (600), `--weight-bold` (700). Do not write raw weights, and do not invent optical in-betweens (560/620/650): if a label looks too heavy, step the size down or use a muted text token.
 
-- Widget titles: 11px, weight 600, uppercase, letter-spacing 0.07em, color `--text-subtle`
-- Widget KPI values: very large (~48–72px), weight 600, color `--text-bright`
-- Body text: 13–14px, weight 400, color `--text`
-- Captions / labels: 11–12px, weight 500, color `--text-muted`
+The recurring type patterns:
+
+- Uppercase micro-labels (widget titles, dialog eyebrows, group headers): `--text-xs`/`--text-2xs`, `--weight-semibold`, letter-spacing **0.07em**, color `--text-subtle` — one metric set everywhere
+- Widget KPI values: very large (~48–72px), `--weight-semibold`, color `--text-bright`
+- Body text: `--text-l`, `--weight-regular`, color `--text`
+- Captions / labels: `--text-s`, `--weight-medium`, color `--text-muted`
+- Buttons: `--weight-semibold`
 - Monospace (paths, code chips): same size as surrounding text, `--font-mono`, often with `--bg-surface-3` background
 
 If a size recurs across three or more primitives, promote it to a token.
@@ -321,6 +348,10 @@ Each tile usually carries:
 
 This is what reads as the Instatic dashboard aesthetic. Same pattern is used by the storage breakdown, posts widget, activity feed, etc. The "Add block" tile uses `box-shadow: inset 0 0 0 1px ...` to convey emptiness without breaking the borderless rule.
 
+#### Glass tiles (hero variant)
+
+Dashboard widgets and the onboarding bento use the **glass** variant of the tile: `--glass-surface` fill (a surface-2 alpha) + `--glass-blur` backdrop + a faint `--glass-border` + `--shadow-premium`. Hover lifts the fill one tone (`--glass-surface-hover`, a surface-3 alpha), warms the border with the brand hue (`--glass-border-hover`) and raises the card 2px. Glass is reserved for hero/dashboard tiles — panel bodies, lists, and workspace chrome stay flat. All five `--glass-*` tokens derive from the surface ramp so glass reads as the same material lifted, not a second palette. Canonical implementation: `src/ui/components/Widget/Widget.module.css`.
+
 ### 2. Floating Overlay Panels
 
 Spotlight, popovers, modals, and command palettes. These sit above the editor with a blur backdrop:
@@ -349,10 +380,10 @@ Bordered, transparent, pill-shaped:
   color: var(--text);
 }
 .input:hover  { border-color: var(--overlay-30); }
-.input:focus  { border-color: var(--overlay-50); box-shadow: var(--shadow-input-focus); }
+.input:focus  { border-color: var(--border-focus); box-shadow: var(--shadow-input-focus); }
 ```
 
-The border is the input's identity. Don't fill them. Don't square the corners.
+The border is the input's identity. Don't fill them. Don't square the corners. The focus pair (`--border-focus` + `--shadow-input-focus`) is identical on `Input`, `Select`, and `SearchBar` — never invent a per-control focus style.
 
 ### 4. Panel rail (the colored sidebar)
 
@@ -527,11 +558,11 @@ If you find yourself reaching for `!important`, the cascade is wrong — fix the
 
 ### Focus
 
-The achromatic focus ring is `--focus-ring` (1px white at 20% alpha). Inputs use a stronger composite focus glow via `--shadow-input-focus`. Never remove focus indicators without replacing them with a visible alternative.
+The focus ring is `--focus-ring` — a 2px brand-tinted ring visible on every surface of the dark ramp. Inputs pair `--border-focus` with the `--shadow-input-focus` glow. Never remove focus indicators without replacing them with a visible alternative.
 
 ### Color contrast
 
-The text tokens (`--text-bright` → `--text-disabled`) pass WCAG AA against `--bg-body`. The semantic state tokens have a `*-text` variant (e.g. `--danger-text`, `--success-text`) chosen for use **on a tinted background** — use those instead of pairing a raw `--danger` with `--bg-body`.
+The content text tokens (`--text-bright` → `--text-subtle`) pass WCAG AA (≥4.5:1) on every surface up to `--bg-surface-3`. `--text-disabled` is exempt because it may only mark **disabled states** — never use it for content, labels, or placeholders (placeholders use `--text-subtle`). The semantic state tokens have a `*-text` variant (e.g. `--danger-text`, `--success-text`) chosen for use **on a tinted background** — use those instead of pairing a raw `--danger` with `--bg-body`. `--brand-ink` is the only approved text color on brand fills.
 
 ### No native browser dialogs
 
@@ -560,8 +591,11 @@ The HTML `title` attribute is banned for hover hints — gated by `no-native-tit
 | `alert('Saved!')`                                        | Toast or `role="status"` element                         |
 | `<input title="Help text">` (hover hint)                 | `<Tooltip>` primitive                                    |
 | Inline SVG icon string                                   | `pixel-art-icons/icons/<name>`                           |
-| Card with a colored border                               | Borderless tile on a darker parent (1px gap pattern)     |
-| Hover that changes a card's border color                 | Hover that lifts the surface tone (`-surface-2` → `-3`)  |
+| Card with a colored border                               | Borderless tile on a darker parent (1px gap pattern); glass hero tiles use `--glass-border` only |
+| Hover that recolors a flat card's border                 | Hover that lifts the surface tone (`-surface-2` → `-3`); only glass hero tiles may warm the border via `--glass-border-hover` |
+| Raw `font-weight: 560/620/650`                           | The four `--weight-*` tokens                             |
+| Ad-hoc `transition: ... 0.1s ease`                       | `var(--duration-fast/-/slow)` + `var(--ease)` / `var(--ease-out)` |
+| A second chromatic accent for actions                    | `--brand-*` is the only interactive accent — demote the rest |
 | Filling an input with a tinted background                | Transparent fill, white-alpha border                     |
 | Inventing a one-off color for a category                 | Use `assignRailAccents` / `railAccent` from `@ui/railAccent`, or add a new tint token in `globals.css`|
 

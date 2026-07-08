@@ -17,7 +17,8 @@
 
 .searchBar:focus-within {
     background: transparent;
-    border-color: var(--overlay-50);
+    border-color: var(--border-focus);
+    box-shadow: var(--shadow-input-focus);
 }
 
 /* The inner Input primitive carries its own chrome by default. Inside the

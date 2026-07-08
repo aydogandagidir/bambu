@@ -10,21 +10,26 @@
     padding: var(--space-7xl) var(--space-2xl);
     background: var(--bg-body);
     color: var(--text);
-    font-family: system-ui, sans-serif;
+    font-family: var(--font-sans);
 }
 
+/* Floating-panel recipe: the auth card is the first surface a user ever
+   sees — it advertises itself with the overlay border + panel shadow like
+   every other floating layer. */
 .panel {
     width: min(100%, 360px);
     padding: var(--space-5xl);
-    border-radius: 16px;
+    border: 1px solid var(--overlay-10);
+    border-radius: var(--card-radius);
     background: var(--bg-surface);
+    box-shadow: var(--shadow-panel);
 }
 
 .title {
     margin: 0 0 var(--space-3xl);
     color: var(--text-bright);
     font-size: var(--text-3xl);
-    font-weight: 650;
+    font-weight: var(--weight-semibold);
     letter-spacing: 0;
 }
 
