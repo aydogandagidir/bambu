@@ -37,9 +37,18 @@ interface PhaseCopy {
   submitPending: string
 }
 
+/**
+ * Copy speaks to the person in front of the screen, not to the schema behind it.
+ * `POST /setup` creates a site and its first owner — "Create your site" is what
+ * that means to them; "Create Admin" was the name of the row we insert.
+ *
+ * The `login` strings are duplicated verbatim by the server-rendered skeleton in
+ * `server/static.ts`, which paints this screen before React mounts. They must
+ * stay in sync or the heading visibly changes under the reader.
+ */
 const PHASE_COPY: Record<PreAuthPhase, PhaseCopy> = {
-  setup: { title: 'Set Up CMS', submit: 'Create Admin', submitPending: 'Setting up' },
-  login: { title: 'Admin Login', submit: 'Sign In', submitPending: 'Signing in' },
+  setup: { title: 'Welcome to Bambu', submit: 'Create your site', submitPending: 'Creating your site' },
+  login: { title: 'Sign in', submit: 'Sign in', submitPending: 'Signing in' },
   mfa: { title: 'Two-Factor Authentication', submit: 'Verify', submitPending: 'Verifying' },
 }
 
@@ -196,8 +205,13 @@ export function AdminPreAuthForm({
                 />
               </label>
 
-              <label className={styles.field} htmlFor={passwordId}>
-                <span>Password</span>
+              {/* A <div>, not a <label>: the field carries a show/hide button in
+                  its trailing slot, and a wrapping label pulls that button's
+                  `aria-label` into the input's accessible name — a screen reader
+                  announced this field as "Password Show password". The explicit
+                  `htmlFor` association does the same job without swallowing it. */}
+              <div className={styles.field}>
+                <label htmlFor={passwordId}>Password</label>
                 <Input
                   id={passwordId}
                   value={password}
@@ -230,7 +244,7 @@ export function AdminPreAuthForm({
                     </button>
                   }
                 />
-              </label>
+              </div>
             </>
           )}
 

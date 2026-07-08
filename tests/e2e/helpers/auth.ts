@@ -4,6 +4,11 @@ import { OWNER } from './constants'
 /**
  * Authentication + first-run setup helpers, written to mirror what a real owner
  * does in the browser: fill the visible form, submit, wait for the landing UI.
+ *
+ * `getByLabel('Password')` needs `{ exact: true }` everywhere: the field's
+ * trailing slot holds a toggle whose `aria-label` is "Show password", and
+ * `getByLabel` matches substrings by default — so the loose form resolves to two
+ * elements and throws a strict-mode violation.
  */
 
 /**
@@ -14,7 +19,7 @@ import { OWNER } from './constants'
  */
 export async function completeSetupOrLogin(page: Page): Promise<void> {
   await page.goto('/admin')
-  const setupHeading = page.getByRole('heading', { name: 'Set Up CMS' })
+  const setupHeading = page.getByRole('heading', { name: 'Welcome to Bambu' })
   const onSetup = await setupHeading
     .waitFor({ state: 'visible', timeout: 15_000 })
     .then(() => true, () => false)
@@ -22,12 +27,29 @@ export async function completeSetupOrLogin(page: Page): Promise<void> {
   if (onSetup) {
     await page.getByLabel('Site name').fill(OWNER.siteName)
     await page.getByLabel('Email').fill(OWNER.email)
-    await page.getByLabel('Password').fill(OWNER.password)
-    await page.getByRole('button', { name: 'Create Admin' }).click()
+    await page.getByLabel('Password', { exact: true }).fill(OWNER.password)
+    await page.getByRole('button', { name: 'Create your site' }).click()
   } else {
     await login(page)
   }
   await expectLoggedIn(page)
+}
+
+/**
+ * Wait for the real sign-in screen — the React one.
+ *
+ * `server/static.ts` paints a server-rendered skeleton of this screen into
+ * `#root` for every unauthenticated request, and that skeleton is a copy twin:
+ * same "Sign in" heading, same Email/Password labels, same "Sign in" button. Its
+ * `<form>` does a native `POST /admin/api/cms/login`, so a bare `getByRole`
+ * match can resolve against the skeleton and drive it instead of the app.
+ *
+ * `createRoot().render()` replaces the container's children, so the skeleton's
+ * absence is the signal that React has mounted. Assert that first, always.
+ */
+export async function expectSignInScreen(page: Page): Promise<void> {
+  await expect(page.locator('[data-initial-login-skeleton]')).toHaveCount(0)
+  await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible()
 }
 
 /** Log in as the owner through the admin login form. Unauthenticated context. */
@@ -42,10 +64,10 @@ export async function loginAs(
   password: string,
 ): Promise<void> {
   await page.goto('/admin')
-  await expect(page.getByRole('heading', { name: 'Admin Login' })).toBeVisible()
+  await expectSignInScreen(page)
   await page.getByLabel('Email').fill(email)
-  await page.getByLabel('Password').fill(password)
-  await page.getByRole('button', { name: 'Sign In' }).click()
+  await page.getByLabel('Password', { exact: true }).fill(password)
+  await page.getByRole('button', { name: 'Sign in' }).click()
   await expectLoggedIn(page)
 }
 
@@ -68,11 +90,11 @@ export async function completeStepUp(
   await expect(dialog).toBeHidden({ timeout: 20_000 })
 }
 
-/** Sign out through the account menu and confirm the login screen returns. */
+/** Sign out through the account menu and confirm the sign-in screen returns. */
 export async function logout(page: Page): Promise<void> {
   await page.getByTestId('account-menu-trigger').click()
   await page.getByTestId('account-menu-sign-out').click()
-  await expect(page.getByRole('heading', { name: 'Admin Login' })).toBeVisible()
+  await expectSignInScreen(page)
 }
 
 /** The owner is authenticated once the account menu trigger is on screen. */

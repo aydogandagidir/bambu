@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test'
-import { ANONYMOUS_STATE, expectLoggedIn, login, logout } from './helpers'
+import { ANONYMOUS_STATE, expectLoggedIn, expectSignInScreen, login, logout } from './helpers'
 
 async function expectMobileAccountMenuContained(page: Page): Promise<void> {
   const metrics = await page.getByRole('menu', { name: 'Account menu' }).evaluate((element) => {
@@ -55,7 +55,7 @@ test.describe('auth session lifecycle', () => {
       await logout(page)
 
       await stalePage.goto('/admin/site')
-      await expect(stalePage.getByRole('heading', { name: 'Admin Login' })).toBeVisible()
+      await expectSignInScreen(stalePage)
       await expect(stalePage.getByTestId('account-menu-trigger')).toHaveCount(0)
       expect(staleConsoleErrors).not.toContainEqual(
         expect.stringContaining('[module-inserter] failed to load user preference'),
@@ -77,7 +77,7 @@ test.describe('auth session lifecycle', () => {
     await expectMobileAccountMenuContained(page)
 
     await page.getByTestId('account-menu-sign-out').click()
-    await expect(page.getByRole('heading', { name: 'Admin Login' })).toBeVisible()
+    await expectSignInScreen(page)
     await expect(page.getByTestId('account-menu-trigger')).toHaveCount(0)
   })
 })
