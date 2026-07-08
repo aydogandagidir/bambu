@@ -1,31 +1,3 @@
-/**
- * OnboardingPanel — five-step setup checklist rendered above the widget
- * grid. Step state comes from `useOnboardingState` (live CMS lookups),
- * so steps tick to "done" as the user actually completes them.
- *
- * Layout
- * ------
- * Two-column grid (collapses to a single column on narrow viewports):
- *
- *   ┌──────────────────────┬───────────────────────────────────┐
- *   │                      │  step 1 — full-width row          │
- *   │   (big progress      ├───────────────────────────────────┤
- *   │    ring)             │  step 2 — full-width row          │
- *   │                      ├───────────────────────────────────┤
- *   │   Finish setting     │  step 3                           │
- *   │   up your site       ├───────────────────────────────────┤
- *   │   (large headline    │  …                                │
- *   │    below the ring)   │                                   │
- *   │                      │                                   │
- *   │   short description  │                                   │
- *   │                      │                                   │
- *   │   [Dismiss]          │                                   │
- *   └──────────────────────┴───────────────────────────────────┘
- *
- * The panel stays visible at all times until the user dismisses it
- * (the previous "Hide steps" toggle was removed — there's no in-between
- * collapsed state). Dismissal persists in localStorage per user.
- */
 import { useState } from 'react'
 import { CheckIcon } from 'pixel-art-icons/icons/check'
 import { ChevronRightIcon } from 'pixel-art-icons/icons/chevron-right'
@@ -39,8 +11,7 @@ import { useAdminUi } from '@admin/state/adminUi'
 import { requestCmsSiteReload } from '@admin/state/adminEvents'
 import { Button } from '@ui/components/Button'
 import type { PixelArtIconComponent } from '@core/dashboard'
-import type { OnboardingFacts, OnboardingStepState } from '../hooks/useOnboardingState'
-import { LiquidProgressRing } from './LiquidProgressRing'
+import type { OnboardingFacts } from '../hooks/useOnboardingState'
 import {
   FrameworkManagerDialog,
   type FrameworkManagerApplier,
@@ -65,45 +36,40 @@ interface StepDef {
 const STEPS: readonly StepDef[] = [
   {
     id: 'identity',
-    title: 'Set site identity',
-    desc:
-      'Pick a favicon, logo and site title. Used everywhere — admin chrome, OG tags, published pages.',
+    title: 'Site Identity',
+    desc: 'Pick a favicon, logo and site title.',
     cta: 'Open settings',
     icon: ImageSolidIcon,
     action: { kind: 'settings-modal' },
   },
   {
     id: 'framework',
-    title: 'Choose Core Framework import',
-    desc:
-      'Variables only, the full utility framework, or skip it and bring your own CSS.',
+    title: 'Core Framework',
+    desc: 'Setup your CSS variables and utilities.',
     cta: 'Import',
     icon: CodeIcon,
     action: { kind: 'framework-import' },
   },
   {
     id: 'firstPage',
-    title: 'Create your first page',
-    desc:
-      'Start from a blank canvas, a starter layout, or import HTML and we will scaffold a tree.',
+    title: 'First Page',
+    desc: 'Start from a blank canvas or starter layout.',
     cta: 'New page',
     icon: FileTextSolidIcon,
     action: { kind: 'navigate', to: '/admin/site' },
   },
   {
     id: 'plugin',
-    title: 'Install a plugin',
-    desc:
-      'Add SEO, comments, image optimization or workflow extensions from the registry.',
-    cta: 'Browse plugins',
+    title: 'Install Plugin',
+    desc: 'Add SEO, comments, or image optimization.',
+    cta: 'Browse',
     icon: PackageSolidIcon,
     action: { kind: 'navigate', to: '/admin/plugins' },
   },
   {
     id: 'team',
-    title: 'Invite your team',
-    desc:
-      'Editors, designers and developers — each role gets a tuned set of editor permissions.',
+    title: 'Invite Team',
+    desc: 'Add editors, designers and developers.',
     cta: 'Add members',
     icon: UsersSolidIcon,
     action: { kind: 'navigate', to: '/admin/users' },
@@ -113,14 +79,7 @@ const STEPS: readonly StepDef[] = [
 interface OnboardingPanelProps {
   facts: OnboardingFacts
   onDismiss: () => void
-  /** Called after the Core Framework import saved — refresh the onboarding facts. */
   onFrameworkImported: () => void
-}
-
-function stateLabel(state: OnboardingStepState): string {
-  if (state === 'done') return 'Completed'
-  if (state === 'active') return 'In progress'
-  return 'Not started'
 }
 
 export function OnboardingPanel({ facts, onDismiss, onFrameworkImported }: OnboardingPanelProps) {
@@ -128,34 +87,17 @@ export function OnboardingPanel({ facts, onDismiss, onFrameworkImported }: Onboa
   const openSettings = useAdminUi((s) => s.openSettings)
   const [frameworkImportOpen, setFrameworkImportOpen] = useState(false)
 
-  // Same dialog, same behaviour as the in-editor Manage Framework host: the
-  // full Full / Variables only / None state picker, reconciled the same way
-  // (merge add-missing + flip utilities). Onboarding just persists through the
-  // cmsAdapter instead of the live editor store.
   const onboardingApplier: FrameworkManagerApplier = {
     capabilities: { canRemove: true },
     apply: async (target) => {
       const site = await cmsAdapter.loadSite('default')
       if (!site) throw new Error('Site is not ready yet — finish setup first.')
       site.settings.framework = applyFrameworkPreset(site.settings.framework, target)
-      // Regenerate / prune the generated `framework:` utility classes (and strip
-      // stale classIds off nodes) to match the new settings — the same reconcile
-      // the in-editor store runs. Without it, removing the framework here would
-      // leave its `.text-primary` / `.bg-primary` classes lingering in the saved
-      // styleRules, so the Site editor keeps showing them until a hard refresh.
       reconcileFrameworkClasses(site)
       await cmsAdapter.saveSite(site, {
         baselinePageIds: site.pages.map((page) => page.id),
         dirty: { all: false, pageIds: new Set(), componentIds: new Set(), layoutIds: new Set() },
       })
-      // The framework settings were written to storage outside the editor. If
-      // the Site editor's store was hydrated earlier this session, its in-memory
-      // `site` is now stale and `usePersistence`'s mount-load early-returns
-      // without refetching — so the editor would keep showing the pre-import
-      // framework ("stuck on variables only"). Signal a reload, matching every
-      // other out-of-editor site mutation (bundle import, plugin install, data
-      // edits). The in-editor applier doesn't need this — it mutates the store
-      // directly.
       requestCmsSiteReload()
     },
   }
@@ -163,6 +105,12 @@ export function OnboardingPanel({ facts, onDismiss, onFrameworkImported }: Onboa
   const states = STEPS.map((step) => ({ step, state: facts[step.id] }))
   const done = states.filter((s) => s.state === 'done').length
   const total = STEPS.length
+  const percent = Math.round((done / total) * 100)
+
+  // Calculate SVG circle properties for the progress
+  const radius = 40
+  const circumference = 2 * Math.PI * radius
+  const strokeDashoffset = circumference - (percent / 100) * circumference
 
   function runStep(step: StepDef) {
     if (step.action.kind === 'navigate') {
@@ -175,72 +123,83 @@ export function OnboardingPanel({ facts, onDismiss, onFrameworkImported }: Onboa
   }
 
   return (
-    <section className={styles.onboarding}>
-      <header className={styles.head}>
-        <div className={styles.headBlock}>
-          <LiquidProgressRing value={done} total={total} />
-          <h2 className={styles.headTitle}>Finish setting up your site</h2>
-          <p className={styles.headDesc}>
-            {done} of {total} steps complete. Hit each one in any order — your site is live the
-            moment you publish a page.
-          </p>
+    <section className={styles.bentoBox}>
+      {/* Left Sidebar: Progress */}
+      <div className={styles.bentoSidebar}>
+        <div className={styles.sidebarTop}>
+          <h2>Command Center</h2>
+          <p>System setup sequence</p>
         </div>
-        <div className={styles.headActions}>
-          <Button variant="ghost" size="sm" onClick={onDismiss}>
-            Dismiss
+
+        <div className={styles.progressContainer}>
+          <svg className={styles.progressSvg} width="120" height="120" viewBox="0 0 100 100">
+            <circle
+              className={styles.progressTrack}
+              cx="50"
+              cy="50"
+              r={radius}
+              strokeWidth="6"
+              fill="transparent"
+            />
+            <circle
+              className={styles.progressIndicator}
+              cx="50"
+              cy="50"
+              r={radius}
+              strokeWidth="6"
+              fill="transparent"
+              strokeDasharray={circumference}
+              strokeDashoffset={strokeDashoffset}
+              strokeLinecap="round"
+            />
+          </svg>
+          <div className={styles.progressText}>
+            <span className={styles.progressValue}>{percent}%</span>
+            <span className={styles.progressLabel}>ONLINE</span>
+          </div>
+        </div>
+
+        <div className={styles.sidebarBottom}>
+          <Button variant="ghost" size="sm" onClick={onDismiss} className={styles.dismissBtn}>
+            Dismiss Setup
           </Button>
         </div>
-      </header>
-      <ol className={styles.steps}>
+      </div>
+
+      {/* Right Grid: Setup Tasks */}
+      <div className={styles.bentoGrid}>
         {states.map(({ step, state }, i) => {
           const StepIcon = step.icon
-          const variant: 'ghost' | 'secondary' | 'primary' =
-            state === 'done' ? 'ghost' : state === 'active' ? 'primary' : 'secondary'
+          const variant = state === 'done' ? 'ghost' : state === 'active' ? 'primary' : 'secondary'
+          
           return (
-            <li className={styles.step} data-state={state} key={step.id}>
-              <span className={styles.stepCheck} aria-hidden="true">
-                {state === 'done' ? (
-                  <CheckIcon size={11} />
-                ) : (
-                  String(i + 1).padStart(2, '0')
-                )}
-              </span>
-              <span className={styles.stepIcon} aria-hidden="true">
-                <StepIcon size={14} />
-              </span>
-              <div className={styles.stepBody}>
-                <div className={styles.stepTitle}>
-                  <span className={styles.stepIndex}>STEP {String(i + 1).padStart(2, '0')}</span>
-                  <span>{step.title}</span>
-                </div>
-                <div className={styles.stepDesc}>{step.desc}</div>
-              </div>
-              <div className={styles.stepCta}>
-                <span className={styles.stepHint} data-state={state}>
-                  {stateLabel(state)}
+            <div className={styles.stepCard} data-state={state} key={step.id}>
+              <div className={styles.stepHeader}>
+                <span className={styles.stepIndex}>PHASE 0{i + 1}</span>
+                <span className={styles.stepIcon} aria-hidden="true">
+                  {state === 'done' ? <CheckIcon size={14} /> : <StepIcon size={14} />}
                 </span>
-                <Button
-                  variant={variant}
-                  size="sm"
-                  onClick={() => runStep(step)}
-                >
+              </div>
+              <div className={styles.stepBody}>
+                <h3>{step.title}</h3>
+                <p>{step.desc}</p>
+              </div>
+              <div className={styles.stepFoot}>
+                <Button variant={variant} size="sm" onClick={() => runStep(step)} className={styles.stepButton}>
                   {step.cta}
                   <ChevronRightIcon size={10} aria-hidden="true" />
                 </Button>
               </div>
-            </li>
+            </div>
           )
         })}
-      </ol>
+      </div>
 
       <FrameworkManagerDialog
         open={frameworkImportOpen}
         onClose={() => setFrameworkImportOpen(false)}
         applier={onboardingApplier}
         currentState={facts.framework === 'done' ? 'full' : 'none'}
-        // The onboarding step's intent is "import the framework" — open with
-        // Full pre-selected so the primary button reads "Import framework" and
-        // one click imports, rather than landing on the no-op current state.
         initialTarget="full"
         onApplied={onFrameworkImported}
       />

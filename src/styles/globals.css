@@ -57,19 +57,19 @@
     --space-11xl: clamp(56px, calc(50.057px + 1.524vw), 72px);
     --space-12xl: clamp(84px, calc(75.086px + 2.286vw), 108px);
 
-    /* Surfaces */
-    --bg-body: #000000;
-    --bg-surface: #1b1b1b;
-    --bg-surface-2: #282828;
-    --bg-surface-3: #323232;
-    --bg-surface-4: #4a4a4a;
-    --bg-surface-5: #605f5f;
+    /* Surfaces - Deep Ocean / Midnight Blue Palette */
+    --bg-body: #050b14;
+    --bg-surface: #0a1120;
+    --bg-surface-2: #111827;
+    --bg-surface-3: #1f2937;
+    --bg-surface-4: #374151;
+    --bg-surface-5: #4b5563;
 
     /* Borders */
-    --border-subtle: #1f1f1f;
-    --border-muted: #2e2e2e;
-    --border: #333333;
-    --border-strong: #4a4a4a;
+    --border-subtle: #0a1120;
+    --border-muted: #111827;
+    --border: #1f2937;
+    --border-strong: #374151;
 
     /* Text */
     --text-bright: #f4f4f5;
@@ -202,6 +202,15 @@
         0 0 5px rgba(0, 0, 0, 0.24);
     --shadow-tooltip:
         0 4px 16px var(--scrim-50), inset 0 1px 0 var(--overlay-5);
+
+    /* Premium UI Additions - Glass & Neon */
+    --text-gradient-premium: linear-gradient(135deg, #ffffff 0%, #93c5fd 100%);
+    --glass-surface: rgba(17, 24, 39, 0.45);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-border-hover: rgba(147, 197, 253, 0.3);
+    --glass-blur: blur(32px);
+    --shadow-premium: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 var(--glass-border);
+    --shadow-premium-hover: 0 12px 48px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.15), inset 0 1px 0 var(--glass-border-hover);
 
     /* Keycap */
     --kbd-face-top: #434343; /* between surface-3 and surface-4 */

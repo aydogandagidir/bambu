@@ -36,9 +36,12 @@
 }
 
 .gridHeaderLeft h2 {
-    font-size: var(--text-4xl);
+    font-size: calc(var(--text-4xl) * 1.1);
     letter-spacing: -0.01em;
     color: var(--text-bright);
+    background: var(--text-gradient-premium);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
     font-weight: 600;
     margin: 0;
 }

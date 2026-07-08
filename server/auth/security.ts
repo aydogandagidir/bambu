@@ -122,6 +122,16 @@ export function originAllowed(req: Request): boolean {
   const origin = normalizeOrigin(rawOrigin)
   if (!origin) return false
   if (origin === normalizeOrigin(expectedOrigin(req))) return true
+  
+  // In multi-tenant environments, the edge proxy terminates TLS and forwards
+  // the request as HTTP. We must allow the origin if it matches the Host header
+  // over either HTTP or HTTPS, as we cannot rely on a single statically configured
+  // publicOrigin anymore.
+  const host = req.headers.get('host')
+  if (host && (origin === `http://${host}` || origin === `https://${host}`)) {
+    return true
+  }
+
   if (publicOrigins.includes(origin)) return true
   return DEV_ORIGIN_ALLOWLIST.some((dev) => normalizeOrigin(dev) === origin)
 }

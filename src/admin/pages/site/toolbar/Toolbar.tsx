@@ -99,6 +99,7 @@ export function Toolbar({
   )
   const [pluginStatuses, setPluginStatuses] = useState<Record<string, PluginButtonStatus>>({})
   const [statusTimers] = useState(() => new Map<string, ReturnType<typeof setTimeout>>())
+  const [isCollapsed, setIsCollapsed] = useState(false)
   const configuredFaviconUrl = faviconUrl?.trim()
 
   useEffect(() => {
@@ -167,47 +168,64 @@ export function Toolbar({
         aria-label="Editor toolbar"
         data-testid="toolbar"
         className={styles.header}
+        data-collapsed={isCollapsed ? 'true' : undefined}
       >
         {/* ── Left section ────────────────────────────────────────────────── */}
 
-        {siteName === null ? (
-          <span
-            className={styles.siteNameSkeleton}
-            data-testid="toolbar-site-brand"
-            aria-hidden="true"
+        <div className={styles.brandGroup}>
+          <div className={styles.brandGroupContent}>
+            {siteName === null ? (
+              <span
+                className={styles.siteNameSkeleton}
+                data-testid="toolbar-site-brand"
+                aria-hidden="true"
+              >
+                <Skeleton width={76} height={12} radius={999} />
+              </span>
+            ) : configuredFaviconUrl ? (
+              <Tooltip content={siteName} side="right">
+                <img
+                  className={styles.siteFavicon}
+                  data-testid="toolbar-site-brand"
+                  src={configuredFaviconUrl}
+                  alt={`Site: ${siteName}`}
+                  draggable={false}
+                />
+              </Tooltip>
+            ) : (
+              <Tooltip content={siteName} side="right">
+                <span
+                  className={styles.siteName}
+                  data-testid="toolbar-site-brand"
+                  aria-label={`Site: ${siteName}`}
+                >
+                  {siteName}
+                </span>
+              </Tooltip>
+            )}
+          </div>
+          <button
+            type="button"
+            className={styles.collapseButton}
+            onClick={() => setIsCollapsed(!isCollapsed)}
+            aria-label={isCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+            aria-expanded={!isCollapsed}
           >
-            <Skeleton width={76} height={12} radius={999} />
-          </span>
-        ) : configuredFaviconUrl ? (
-          <Tooltip content={siteName} side="bottom">
-            <img
-              className={styles.siteFavicon}
-              data-testid="toolbar-site-brand"
-              src={configuredFaviconUrl}
-              alt={`Site: ${siteName}`}
-              draggable={false}
-            />
-          </Tooltip>
-        ) : (
-          <Tooltip content={siteName} side="bottom">
-            <span
-              className={styles.siteName}
-              data-testid="toolbar-site-brand"
-              aria-label={`Site: ${siteName}`}
-            >
-              {siteName}
-            </span>
-          </Tooltip>
-        )}
-        {adminNavigationSlot ?? <DefaultAdminNavigation section={section} />}
+            <LayoutSolidIcon size={16} aria-hidden="true" />
+          </button>
+        </div>
+
+        <nav className={styles.navGroup} aria-label="Main Navigation">
+          <div className={styles.navSectionLabel}>Workspace</div>
+          {adminNavigationSlot ?? <DefaultAdminNavigation section={section} isCollapsed={isCollapsed} />}
+        </nav>
 
         <div className={styles.workspaceToolbarItems}>
           {pluginButtons.map((button) => {
             const key = pluginButtonKey(button)
             const status = pluginStatuses[key]
             const statusId = `plugin-command-status-${button.pluginId}-${button.id}`
-            return (
-              <div key={key} className={styles.pluginButtonWrapper}>
+            const btn = (
                 <Button
                   variant="secondary"
                   size="sm"
@@ -221,6 +239,10 @@ export function Toolbar({
                 >
                   <span>{status?.state === 'running' ? `${button.label}...` : button.label}</span>
                 </Button>
+            )
+            return (
+              <div key={key} className={styles.pluginButtonWrapper}>
+                {isCollapsed ? <Tooltip content={button.label} side="right">{btn}</Tooltip> : btn}
                 {status && (
                   <output
                     id={statusId}
@@ -255,14 +277,14 @@ export function Toolbar({
               they live in the toolbar shell, not in any layout's right slot. */}
           <SettingsButton />
           <OpenLivePageButton />
-          <AccountMenuButton />
+          <AccountMenuButton isExpanded={!isCollapsed} />
         </div>
       </header>
     </>
   )
 }
 
-function DefaultAdminNavigation({ section }: { section: AdminWorkspace }) {
+function DefaultAdminNavigation({ section, isCollapsed }: { section: AdminWorkspace, isCollapsed: boolean }) {
   return (
     <>
       <DefaultNavSlot
@@ -270,42 +292,49 @@ function DefaultAdminNavigation({ section }: { section: AdminWorkspace }) {
         icon={<DashboardSolidIcon size={NAV_ICON_SIZE} aria-hidden="true" />}
         label="Dashboard"
         active={section === 'dashboard'}
+        isCollapsed={isCollapsed}
       />
       <DefaultNavSlot
         to="/admin/site"
         icon={<LayoutSolidIcon size={NAV_ICON_SIZE} aria-hidden="true" />}
         label="Site"
         active={section === 'site'}
+        isCollapsed={isCollapsed}
       />
       <DefaultNavSlot
         to="/admin/content"
         icon={<ArticleSolidIcon size={NAV_ICON_SIZE} aria-hidden="true" />}
         label="Content"
         active={section === 'content'}
+        isCollapsed={isCollapsed}
       />
       <DefaultNavSlot
         to="/admin/data"
         icon={<DatabaseSolidIcon size={NAV_ICON_SIZE} aria-hidden="true" />}
         label="Data"
         active={section === 'data'}
+        isCollapsed={isCollapsed}
       />
       <DefaultNavSlot
         to="/admin/media"
         icon={<ImagesSolidIcon size={NAV_ICON_SIZE} aria-hidden="true" />}
         label="Media"
         active={section === 'media'}
+        isCollapsed={isCollapsed}
       />
       <DefaultNavSlot
         to="/admin/plugins"
         icon={<PackageSolidIcon size={NAV_ICON_SIZE} aria-hidden="true" />}
         label="Plugins"
         active={section === 'plugins'}
+        isCollapsed={isCollapsed}
       />
       <DefaultNavSlot
         to="/admin/ai"
         icon={<AiBoxSolidIcon size={NAV_ICON_SIZE} aria-hidden="true" />}
         label="AI"
         active={section === 'ai'}
+        isCollapsed={isCollapsed}
       />
     </>
   )
@@ -316,24 +345,29 @@ function DefaultNavSlot({
   icon,
   label,
   active,
+  isCollapsed,
 }: {
   to: string
   icon: ReactNode
   label: string
   active: boolean
+  isCollapsed: boolean
 }) {
-  if (active) {
-    return (
-      <span className={styles.activeSection}>
-        {icon}
-        <span>{label}</span>
-      </span>
-    )
-  }
-  return (
-    <Link className={styles.adminLink} to={to}>
+  const inner = (
+    <>
       {icon}
       <span>{label}</span>
-    </Link>
+    </>
   )
+
+  const el = active ? (
+    <span className={styles.activeSection}>{inner}</span>
+  ) : (
+    <Link className={styles.adminLink} to={to}>{inner}</Link>
+  )
+
+  if (isCollapsed) {
+    return <Tooltip content={label} side="right">{el}</Tooltip>
+  }
+  return el
 }

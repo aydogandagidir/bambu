@@ -101,7 +101,7 @@ Bun.serve({
       const host = req.headers.get('host') || ''
       
       // 1. Hub Portal Routing
-      if (host.startsWith('app.bambu.') || host.startsWith('hub.bambu.') || host === 'app.localhost:3001') {
+      if (host.startsWith('app.bluedev.') || host.startsWith('hub.bluedev.') || host === 'app.localhost:3001') {
         return handleHubRequest(req, dataDir)
       }
       

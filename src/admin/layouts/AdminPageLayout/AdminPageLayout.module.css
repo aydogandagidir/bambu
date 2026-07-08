@@ -8,28 +8,40 @@
 
 .shell {
     display: flex;
-    flex-direction: column;
+    flex-direction: row;
     height: 100vh;
     overflow: hidden;
     background: var(--bg-body);
     color: var(--text);
+    position: relative;
+}
+
+.meshBackground {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    background-image: 
+        radial-gradient(at 0% 0%, rgba(147, 197, 253, 0.15) 0px, transparent 50%),
+        radial-gradient(at 100% 0%, rgba(167, 139, 250, 0.15) 0px, transparent 50%);
+    opacity: 0.8;
 }
 
 .body {
     flex: 1;
     min-height: 0;
     overflow: auto;
-    padding: var(--space-10xl) var(--space-6xl) var(--space-9xl);
+    padding: var(--space-12xl) var(--space-6xl) var(--space-9xl);
     user-select: text;
-    background: var(--bg-surface);
-    border-top-left-radius: 16px;
-    border-top-right-radius: 16px;
+    background: transparent;
+    position: relative;
+    z-index: 1;
 }
 
 .container {
     display: grid;
     gap: var(--space-6xl);
-    width: min(1220px, 100%);
+    width: min(1120px, 100%);
     margin: 0 auto;
 }
 
@@ -51,9 +63,12 @@
 .titleGroup h1 {
     margin: 0;
     color: var(--text-bright);
-    font-size: var(--text-7xl);
+    background: var(--text-gradient-premium);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: calc(var(--text-7xl) * 1.1);
     line-height: 1.05;
-    letter-spacing: 0;
+    letter-spacing: -0.02em;
 }
 
 .titleGroup p {
@@ -61,6 +76,8 @@
     color: var(--text-subtle);
     font-size: var(--text-xl);
     line-height: 1.45;
+    letter-spacing: 0.01em;
+    font-weight: 300;
 }
 
 .headerEnd {

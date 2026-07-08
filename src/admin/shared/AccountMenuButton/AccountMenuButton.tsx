@@ -45,7 +45,7 @@ import { getErrorMessage } from '@core/utils/errorMessage'
 
 const ACCOUNT_ROUTE = '/admin/account'
 
-export function AccountMenuButton(): ReactNode {
+export function AccountMenuButton({ isExpanded = false }: { isExpanded?: boolean }): ReactNode {
   const user = useAuthenticatedAdminUser()
   const navigate = useAdminNavigate()
   const { runStepUp } = useStepUp()
@@ -119,12 +119,22 @@ export function AccountMenuButton(): ReactNode {
         aria-label={`Account menu for ${displayName}`}
         aria-haspopup="menu"
         aria-expanded={open}
-        className={styles.trigger}
+        className={isExpanded ? styles.triggerExpanded : styles.trigger}
         data-testid="account-menu-trigger"
         data-active={open ? 'true' : undefined}
         onClick={() => setOpen((current) => !current)}
       >
-        <UserAvatar user={user} size={26} alt={null} className={styles.triggerAvatar} />
+        {isExpanded ? (
+          <div className={styles.expandedContent}>
+            <UserAvatar user={user} size={28} alt={null} className={styles.triggerAvatar} />
+            <div className={styles.expandedText}>
+              <div className={styles.expandedName}>{displayName}</div>
+              <div className={styles.expandedRole}>{roleLabel}</div>
+            </div>
+          </div>
+        ) : (
+          <UserAvatar user={user} size={26} alt={null} className={styles.triggerAvatar} />
+        )}
       </Button>
       {open && typeof document !== 'undefined' && createPortal(
         <ContextMenu

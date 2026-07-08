@@ -123,6 +123,7 @@ export function AdminPageLayout({
 
   return (
     <div className={styles.shell} data-editor-density={density}>
+      <div className={styles.meshBackground} />
       <Toolbar
         siteName={siteName}
         faviconUrl={faviconUrl}

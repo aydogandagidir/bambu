@@ -3,15 +3,92 @@
 /* ── Header bar ──────────────────────────────────────────────────────────── */
 .header {
     display: flex;
-    align-items: center;
-    height: 36px;
-    padding: 0 var(--space-s);
-    gap: var(--space-4xs);
+    flex-direction: column;
+    width: 250px;
+    height: 100vh;
+    padding: 12px 8px;
+    gap: var(--space-s);
     flex-shrink: 0;
     position: relative;
     z-index: 30;
     user-select: none;
-    background: var(--bg-body);
+    background: var(--bg-surface-1);
+    border-right: 1px solid var(--border);
+    transition: width 0.2s cubic-bezier(0.2, 0, 0, 1);
+    overflow: hidden;
+}
+
+.header[data-collapsed="true"] {
+    width: 60px;
+}
+
+.header[data-collapsed="true"] .siteName,
+.header[data-collapsed="true"] .navSectionLabel,
+.header[data-collapsed="true"] .adminLink span,
+.header[data-collapsed="true"] .activeSection span,
+.header[data-collapsed="true"] .pluginButton span {
+    display: none;
+}
+
+.header[data-collapsed="true"] .adminLink,
+.header[data-collapsed="true"] .activeSection,
+.header[data-collapsed="true"] .pluginButton {
+    justify-content: center;
+    padding: 0;
+}
+
+.brandGroup {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 32px;
+    margin-bottom: 8px;
+    padding: 0 4px;
+}
+
+.brandGroupContent {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+}
+
+.collapseButton {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border: none;
+    border-radius: var(--input-radius);
+    background: transparent;
+    color: var(--text-subtle);
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: background-color 0.1s ease, color 0.1s ease;
+}
+
+.collapseButton:hover {
+    background: color-mix(in srgb, var(--bg-surface-2) 60%, transparent);
+    color: var(--text-muted);
+}
+
+.navGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 1px;
+    flex-shrink: 0;
+}
+
+.navSectionLabel {
+    display: flex;
+    align-items: center;
+    padding: 4px 6px;
+    margin-top: 12px;
+    margin-bottom: 2px;
+    color: var(--text-muted);
+    font-size: 11.5px;
+    font-weight: 500;
+    user-select: none;
 }
 
 .siteName {
@@ -20,11 +97,11 @@
     height: 28px;
     max-width: 140px;
     margin-right: var(--space-3xs);
-    padding: 0 var(--space-s);
+    padding: 0 6px;
     overflow: hidden;
-    color: var(--text);
-    font-size: var(--text-xs);
-    font-weight: 700;
+    color: var(--text-muted);
+    font-size: 12px;
+    font-weight: 600;
     text-overflow: ellipsis;
     white-space: nowrap;
     flex-shrink: 0;
@@ -52,32 +129,51 @@
 }
 
 .adminLink {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: var(--space-xs);
+    gap: 6px;
     height: 28px;
-    padding: 0 var(--space-s);
+    padding: 0 6px;
     border-radius: var(--input-radius);
     color: var(--text-subtle);
-    font-size: var(--text-xs);
-    font-weight: 700;
+    font-size: 12px;
+    font-weight: 400;
     text-decoration: none;
+    transition: background-color 0.1s ease, color 0.1s ease;
 }
 
 .adminLink:hover {
-    background: var(--bg-surface-2);
-    color: var(--text);
+    background: color-mix(in srgb, var(--bg-surface-2) 60%, transparent);
+    color: var(--text-muted);
+}
+
+.adminLink svg {
+    opacity: 0.55;
+    transform: scale(0.85);
+    transition: opacity 0.1s ease;
+}
+
+.adminLink:hover svg {
+    opacity: 0.7;
 }
 
 .activeSection {
-    display: inline-flex;
+    display: flex;
     align-items: center;
-    gap: var(--space-xs);
+    gap: 6px;
     height: 28px;
-    padding: 0 var(--space-s);
-    color: var(--text);
-    font-size: var(--text-xs);
-    font-weight: 700;
+    padding: 0 6px;
+    border-radius: var(--input-radius);
+    background: color-mix(in srgb, var(--bg-surface-2) 80%, transparent);
+    color: var(--text-bright);
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.activeSection svg {
+    opacity: 1;
+    transform: scale(0.85);
+    color: var(--text-bright);
 }
 
 /* Plugins-error indicator dot — shown next to the Plugins nav label
@@ -98,15 +194,16 @@
 
 .workspaceToolbarItems {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: stretch;
     flex: 1;
-    min-width: 0;
+    min-height: 0;
     gap: var(--space-4xs);
 }
 
 .spacer {
     flex: 1;
-    min-width: 8px;
+    min-height: 8px;
 }
 
 .pluginButtonWrapper {
@@ -117,23 +214,27 @@
 }
 
 .pluginButton {
-    display: inline-flex;
+    display: flex;
     align-items: center;
+    gap: 6px;
     height: 28px;
-    padding: 0 var(--space-s);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    background: var(--bg-surface-2);
-    color: var(--text);
-    font-size: var(--text-xs);
-    font-weight: 750;
+    width: 100%;
+    padding: 0 6px;
+    border: none;
+    border-radius: var(--input-radius);
+    background: transparent;
+    color: var(--text-subtle);
+    font-size: 12px;
+    font-weight: 400;
     font-family: inherit;
     white-space: nowrap;
     cursor: pointer;
+    transition: background-color 0.1s ease, color 0.1s ease;
 }
 
 .pluginButton:hover {
-    background: var(--bg-surface-3);
+    background: var(--bg-surface-2);
+    color: var(--text);
 }
 
 .pluginButton[data-state="success"] {
@@ -171,16 +272,6 @@
     color: var(--danger-lighter);
 }
 
-/* ── ZoomControls ─────────────────────────────────────────────────────────── */
-.zoomGroup {
-    display: flex;
-    align-items: center;
-    gap: var(--space-4xs);
-}
-
-.zoomPct {
-    min-width: 44px;
-}
 
 /* ── Publish actions ──────────────────────────────────────────────────────── */
 .publishActionGroup {

@@ -48,6 +48,58 @@
     box-shadow: var(--focus-ring);
 }
 
+.triggerExpanded {
+    display: flex;
+    align-items: center;
+    width: 100%;
+    height: 48px;
+    padding: 0 10px;
+    border-radius: var(--input-radius);
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    user-select: none;
+    transition: background-color 0.1s ease;
+}
+
+.triggerExpanded:hover,
+.triggerExpanded[data-active="true"] {
+    background: color-mix(in srgb, var(--bg-surface-2) 60%, transparent);
+}
+
+.expandedContent {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    width: 100%;
+    text-align: left;
+}
+
+.expandedText {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+
+.expandedName {
+    color: var(--text-bright);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.expandedRole {
+    color: var(--text-muted);
+    font-size: 12px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
 /* ── Dropdown header (display name + email + role badge) ─────────────────── */
 .header {
     display: flex;

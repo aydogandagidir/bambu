@@ -38,8 +38,11 @@
  * No env vars, no API keys, no endpoint configuration required (Constraint #385).
  */
 import { Toolbar } from '@admin/pages/site/toolbar/Toolbar'
-import { ZoomControls } from '@admin/pages/site/toolbar/ZoomControls'
+
 import { PublishButton } from '@admin/pages/site/toolbar/PublishButton'
+import { DownloadIcon } from 'pixel-art-icons/icons/download'
+import { Tooltip } from '@ui/components/Tooltip'
+import { Button } from '@ui/components/Button'
 import { useEditorSelectPreference } from '@admin/pages/site/preferences/editorPreferences'
 import { usePersistence } from '@admin/pages/site/hooks/usePersistence'
 import { useSiteEditorUrlSync } from '@admin/pages/site/hooks/useSiteEditorUrlSync'
@@ -103,6 +106,10 @@ const PreviewOverlay = lazy(() =>
   })),
 )
 
+const ImportUrlDialog = lazy(() =>
+  import('@admin/pages/site/dialogs/ImportUrlDialog').then((m) => ({ default: m.ImportUrlDialog })),
+)
+
 /**
  * AdminCanvasLayout is the Site editor shell. Other canvas-style workspaces
  * render through `AdminWorkspaceCanvasLayout`, and regular admin pages render
@@ -121,6 +128,8 @@ export function AdminCanvasLayout() {
   // editor's `settingsSlice.openSettings` mirrors into it, and the admin
   // shell reads from it too.
   const settingsOpen = useAdminUi((s) => s.settingsOpen)
+  const importUrlDialogOpen = useEditorStore((s) => s.importUrlDialogOpen)
+  const openImportUrlDialog = useEditorStore((s) => s.openImportUrlDialog)
   const publishSiteSummary = useAdminUi((s) => s.setSiteSummary)
   const currentUser = useCurrentAdminUser()
   const pluginBackgroundWorkEnabled = canRunPluginBackgroundWork(currentUser)
@@ -225,7 +234,11 @@ export function AdminCanvasLayout() {
           )}
           rightSlot={(
             <>
-              <ZoomControls />
+              <Tooltip content="Import Site from URL" side="bottom">
+                <Button variant="secondary" onClick={openImportUrlDialog} aria-label="Import Site from URL">
+                  <DownloadIcon size={16} />
+                </Button>
+              </Tooltip>
               <PublishButton
                 enabled={canPublishPages}
                 onSave={canSaveSite ? persistence.saveSite : undefined}
@@ -259,6 +272,12 @@ export function AdminCanvasLayout() {
         {settingsOpen && (
           <Suspense fallback={null}>
             <SettingsModal />
+          </Suspense>
+        )}
+
+        {importUrlDialogOpen && (
+          <Suspense fallback={null}>
+            <ImportUrlDialog />
           </Suspense>
         )}
 

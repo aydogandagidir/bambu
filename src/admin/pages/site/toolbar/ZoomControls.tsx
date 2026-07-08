@@ -25,7 +25,7 @@ import { useEditorStore } from '@site/store/store'
 import { MinusIcon } from 'pixel-art-icons/icons/minus'
 import { PlusIcon } from 'pixel-art-icons/icons/plus'
 import { Button } from '@ui/components/Button'
-import styles from './Toolbar.module.css'
+import styles from './ZoomControls.module.css'
 
 /**
  * Resolve the canvas viewport center in canvas-local coordinates.
@@ -74,7 +74,7 @@ export function ZoomControls() {
       role="group"
       aria-label="Canvas navigation"
       data-testid="toolbar-zoom-controls"
-      className={styles.zoomGroup}
+      className={styles.floatingZoom}
     >
       {/* Zoom out */}
       <Button

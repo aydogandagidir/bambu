@@ -4,6 +4,8 @@ import { Button } from '@ui/components/Button'
 import { Input } from '@ui/components/Input'
 
 import { LoaderIcon } from 'pixel-art-icons/icons/loader'
+import { EyeSolidIcon } from 'pixel-art-icons/icons/eye-solid'
+import { EyeOffSolidIcon } from 'pixel-art-icons/icons/eye-off-solid'
 import {
   getCurrentCmsUser,
   loginCms,
@@ -73,6 +75,7 @@ export function AdminPreAuthForm({
   const [mfaCode, setMfaCode] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(initialError)
+  const [showPassword, setShowPassword] = useState(false)
 
   const siteNameId = useId()
   const emailId = useId()
@@ -201,8 +204,31 @@ export function AdminPreAuthForm({
                   onChange={(event) => setPassword(event.target.value)}
                   required
                   minLength={phase === 'setup' ? MIN_PASSWORD_LENGTH : undefined}
-                  type="password"
+                  type={showPassword ? 'text' : 'password'}
                   autoComplete={phase === 'setup' ? 'new-password' : 'current-password'}
+                  trailingSlot={
+                    <button
+                      type="button"
+                      aria-label={showPassword ? 'Hide password' : 'Show password'}
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      style={{
+                        background: 'transparent',
+                        border: 'none',
+                        padding: '0',
+                        cursor: 'pointer',
+                        color: 'inherit',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                      }}
+                    >
+                      {showPassword ? (
+                        <EyeOffSolidIcon size={16} aria-hidden="true" />
+                      ) : (
+                        <EyeSolidIcon size={16} aria-hidden="true" />
+                      )}
+                    </button>
+                  }
                 />
               </label>
             </>

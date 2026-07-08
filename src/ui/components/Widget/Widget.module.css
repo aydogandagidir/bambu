@@ -14,10 +14,11 @@
        height and the grid would still allocate the full row, leaving
        the visible card stranded at the top of an empty cell. */
     height: 100%;
-    background: var(--bg-surface-2);
-    /* Borderless tile look — the 1px grid gap on the darker parent
-       surface visually separates cards (see DashboardGrid.module.css). */
-    border: 0;
+    background: var(--glass-surface);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    box-shadow: var(--shadow-premium);
     border-radius: var(--card-radius);
     padding: var(--space-3xl) var(--space-3xl) var(--space-2xl);
     display: flex;
@@ -30,9 +31,10 @@
 }
 
 .widget:hover {
-    /* No border to recolour — lift the surface tone instead. Stays
-       achromatic per the editor's design-token policy. */
-    background: var(--bg-surface-3);
+    background: rgba(255, 255, 255, 0.08);
+    box-shadow: var(--shadow-premium-hover);
+    transform: translateY(-2px);
+    border-color: var(--glass-border-hover);
 }
 
 .editing {

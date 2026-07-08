@@ -107,6 +107,9 @@ interface UiSlice {
    */
   layoutNameDialogRequest: LayoutNameDialogRequest | null
 
+  // Import URL Dialog state
+  importUrlDialogOpen: boolean
+
   // Consolidated Explorer panel — the Layers / Pages / Media navigation
   // surfaces in one rail item with tabs.
   explorerPanelOpen: boolean
@@ -160,6 +163,9 @@ interface UiSlice {
   clearComponentizeEditorRequest: (requestId: number) => void
   openLayoutNameDialog: (request: LayoutNameDialogRequest) => void
   closeLayoutNameDialog: () => void
+
+  openImportUrlDialog: () => void
+  closeImportUrlDialog: () => void
 
   setExplorerPanelOpen: (open: boolean) => void
   setExplorerPanelTab: (tab: ExplorerPanelTab) => void
@@ -308,6 +314,7 @@ export const createUiSlice: EditorStoreSliceCreator<UiSlice> = (set, get) => ({
   insertPickerParentId: null,
   componentizeEditorRequest: null,
   layoutNameDialogRequest: null,
+  importUrlDialogOpen: false,
   explorerPanelOpen: true,
   explorerPanelTab: 'layers',
   selectorsPanelOpen: false,
@@ -422,6 +429,10 @@ export const createUiSlice: EditorStoreSliceCreator<UiSlice> = (set, get) => ({
   openLayoutNameDialog: (request) => set({ layoutNameDialogRequest: request }),
 
   closeLayoutNameDialog: () => set({ layoutNameDialogRequest: null }),
+
+  openImportUrlDialog: () => set({ importUrlDialogOpen: true }),
+
+  closeImportUrlDialog: () => set({ importUrlDialogOpen: false }),
 
   setExplorerPanelOpen: (open) => set({ explorerPanelOpen: open }),
 

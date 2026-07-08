@@ -12,6 +12,7 @@ import { useActiveLivePath } from '@admin/pages/site/hooks/useActiveLivePath'
 import { useAutoResolveDependencies } from '@admin/pages/site/hooks/useAutoResolveDependencies'
 import { LayoutNameDialog } from '@admin/pages/site/dialogs/LayoutNameDialog'
 import { PropertiesPanel } from '@admin/pages/site/panels/PropertiesPanel'
+import { ZoomControls } from '@admin/pages/site/toolbar/ZoomControls'
 import { LeftSidebar } from '@admin/pages/site/sidebars/LeftSidebar'
 import { RightSidebar } from '@admin/pages/site/sidebars/RightSidebar'
 import { selectRightSidebarExpanded, useEditorStore } from '@admin/pages/site/store/store'
@@ -108,6 +109,7 @@ export function AdminCanvasEditorBody({
                 )}
                 {/* Properties can be unpinned into the floating draggable overlay. */}
                 {canSaveSite && propertiesPanelMode === 'floating' && <PropertiesPanel variant="floating" />}
+                <ZoomControls />
               </div>
             </div>
             {/* `mode` tells the RightSidebar which expansion model to use:
