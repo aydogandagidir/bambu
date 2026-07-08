@@ -166,6 +166,25 @@ export function configureTrustedProxyCidrs(entries: readonly string[]): void {
   trustedProxyRanges = entries.map(parseTrustedProxyRange)
 }
 
+/**
+ * True when the deployment almost certainly sits behind a TLS-terminating edge
+ * (an HTTPS public origin) but has no trusted-proxy allowlist.
+ *
+ * In that state `clientIp` can only see the proxy's socket address, so every
+ * visitor is attributed to the same IP — and every per-IP rate limit (admin
+ * login, hub login, hub signup) collapses into ONE bucket shared by the whole
+ * platform. Thirty failed logins would then lock out every user at once. The
+ * caller warns at boot; nothing can be inferred safely enough to fail hard,
+ * because an HTTPS origin can also be served directly by Bun.
+ */
+export function proxyAttributionUnconfigured(
+  publicOrigins: readonly string[],
+  trustedProxyCidrs: readonly string[],
+): boolean {
+  if (trustedProxyCidrs.length > 0) return false
+  return publicOrigins.some((origin) => origin.startsWith('https://'))
+}
+
 export function resetTrustedProxyCidrs(): void {
   trustedProxyRanges = []
 }

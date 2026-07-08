@@ -2,7 +2,13 @@ import { createDbClient } from './db'
 import { runMigrations } from './db/runMigrations'
 import { syncSystemRoles } from './repositories/roles'
 import { readServerConfig } from './config'
-import { DEV_ORIGIN_ALLOWLIST, configurePublicOrigins, configureTrustedProxyCidrs, stampSocketIp } from './auth/security'
+import {
+  DEV_ORIGIN_ALLOWLIST,
+  configurePublicOrigins,
+  configureTrustedProxyCidrs,
+  proxyAttributionUnconfigured,
+  stampSocketIp,
+} from './auth/security'
 import { applySecurityHeaders } from './securityHeaders'
 import { startConversationPurgeTick } from './ai/boot'
 
@@ -14,6 +20,14 @@ const { mediaStorageRegistry } = await import('@core/plugins/mediaStorageRegistr
 const config = readServerConfig()
 configureTrustedProxyCidrs(config.trustedProxyCidrs)
 configurePublicOrigins(config.publicOrigins)
+if (proxyAttributionUnconfigured(config.publicOrigins, config.trustedProxyCidrs)) {
+  console.warn(
+    '[server] PUBLIC_ORIGIN is https but TRUSTED_PROXY_CIDRS is empty. If a reverse proxy ' +
+      'fronts this process, every request is attributed to the proxy IP and all per-IP rate ' +
+      'limits (admin login, hub login, hub signup) become one bucket shared by every user. ' +
+      'Set TRUSTED_PROXY_CIDRS to the proxy network.',
+  )
+}
 const { db: defaultDb, migrations } = createDbClient(config.databaseUrl)
 await runMigrations(defaultDb, migrations)
 
@@ -24,7 +38,8 @@ import { parseSqlitePath, isSqliteUrl } from './db/index'
 import { dirname } from 'node:path'
 
 const dataDir = isSqliteUrl(config.databaseUrl) ? dirname(parseSqlitePath(config.databaseUrl)) : 'data'
-initHubDb(dataDir)
+// Awaited: the hub schema must exist before the first request can reach it.
+await initHubDb(dataDir)
 
 // System role sync runs after migrations on every boot — the Owner row's
 // capabilities are force-reset to `CORE_CAPABILITIES` so existing
@@ -102,8 +117,12 @@ Bun.serve({
       const host = req.headers.get('host') || ''
       
       // 1. Hub Portal Routing
+      // The portal serves privileged UI at `/`, so `pathname` can't tell
+      // `applySecurityHeaders` that it must not be frameable — the host does.
       if (isHubHost(host)) {
-        return handleHubRequest(req, dataDir)
+        return applySecurityHeaders(await handleHubRequest(req, dataDir), pathname, {
+          denyFraming: true,
+        })
       }
       
       // 2. Tenant Resolution

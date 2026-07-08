@@ -26,6 +26,7 @@
 import type { DbClient } from '../../db/client'
 import {
   createSessionToken,
+  getDummyPasswordHash,
   hashSessionToken,
   sessionExpiry,
   verifyPassword,
@@ -66,7 +67,7 @@ import { totpSecretErrorResponse, verifyEncryptedTotpCode } from '../../auth/tot
 import { jsonResponse, readValidatedBody, setCookieHeader } from '../../http'
 import { Type } from '@core/utils/typeboxHelpers'
 import { CMS_API_PREFIX, requestAuditContext } from './shared'
-import { clearSessionCookie, getDummyPasswordHash, sessionCookie } from './session'
+import { clearSessionCookie, sessionCookie } from './session'
 import { runRouteTable, type Route } from './routeTable'
 
 /**

@@ -22,3 +22,22 @@ export async function hashSessionToken(token: string): Promise<string> {
 export function sessionExpiry(now = Date.now()): Date {
   return new Date(now + SESSION_ABSOLUTE_TIMEOUT_MS)
 }
+
+/**
+ * A fixed argon2id hash, computed once per process. Login handlers verify
+ * against it on the "no such user" branch so the response time stays constant
+ * and an attacker can't enumerate accounts by timing — without it, an unknown
+ * email returns in ~5ms while a known one pays ~100ms of argon2id.
+ *
+ * The hashed plaintext is deliberately not a real password and never grants
+ * access; `verifyPassword` against this hash returns false for every input.
+ *
+ * Eagerly kicked off at module load so the very first unknown-email login
+ * doesn't pay the one-time hashing cost and stand out as slower than the
+ * steady state.
+ */
+const dummyPasswordHashCache: Promise<string> = hashPassword('not-a-real-account-placeholder')
+
+export function getDummyPasswordHash(): Promise<string> {
+  return dummyPasswordHashCache
+}

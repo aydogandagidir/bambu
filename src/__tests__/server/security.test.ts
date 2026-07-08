@@ -7,6 +7,7 @@ import {
   expectedOrigin,
   isStateChangingMethod,
   originAllowed,
+  proxyAttributionUnconfigured,
   publicOriginIsHttps,
   resetPublicOrigins,
   resetTrustedProxyCidrs,
@@ -309,5 +310,30 @@ describe('stampSocketIp', () => {
     })
     stampSocketIp(req, null)
     expect(clientIp(req)).toBeNull()
+  })
+})
+
+/**
+ * Behind a TLS-terminating edge with no trusted-proxy allowlist, `clientIp`
+ * can only see the proxy's socket address. Every per-IP rate limit then keys on
+ * the same value, so one attacker's failed logins throttle every user at once.
+ * Boot warns; this predicate is the condition it warns on.
+ */
+describe('proxyAttributionUnconfigured', () => {
+  it('flags an https public origin with no trusted proxy CIDRs', () => {
+    expect(proxyAttributionUnconfigured(['https://app.bluedev.dev'], [])).toBe(true)
+  })
+
+  it('stays quiet once the proxy network is declared', () => {
+    expect(proxyAttributionUnconfigured(['https://app.bluedev.dev'], ['172.18.0.0/16'])).toBe(false)
+  })
+
+  it('stays quiet on a plain-HTTP install — nothing is fronting it', () => {
+    expect(proxyAttributionUnconfigured(['http://localhost:3001'], [])).toBe(false)
+    expect(proxyAttributionUnconfigured([], [])).toBe(false)
+  })
+
+  it('flags a mixed origin list as soon as one entry is https', () => {
+    expect(proxyAttributionUnconfigured(['http://localhost:3001', 'https://bambu.bluedev.dev'], [])).toBe(true)
   })
 })
