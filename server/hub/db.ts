@@ -60,8 +60,8 @@ export class HubDatabase {
     `)
     try {
       await this.db.unsafe(`ALTER TABLE tenants ADD COLUMN ownerId TEXT REFERENCES hub_users(id)`)
-    } catch (e) {
-      // Ignore error if column already exists
+    } catch (_err) {
+      // The column already exists — SQLite has no `ADD COLUMN IF NOT EXISTS`.
     }
   }
 
