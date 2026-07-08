@@ -13,12 +13,29 @@
 
 /*
  * Global CSS custom properties - design tokens for the admin/editor UI.
+ *
+ * "Deep Ocean" system: ONE cold slate hue family carries every neutral
+ * (surfaces, borders, text, keycaps, scrims) so the chrome reads as a single
+ * material. Chromatic color is reserved for meaning:
+ *   - brand   (--brand-*)    → the ONE interactive accent: primary actions,
+ *                              focus, links, active indicators
+ *   - identity (--accent-*)  → categorical tints (rails, widgets, chips)
+ *   - state   (danger/warning/success/info)
+ *   - canvas  (selection / hover neon rings)
  * The admin chrome uses the Core Framework-style token vocabulary directly.
  */
 :root {
     --font-sans: "Inter Variable", system-ui, sans-serif;
     --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
         monospace;
+
+    /* Font weights. The only four weights in the admin chrome — no optical
+       in-betweens (560/620/650); if a label looks too heavy, step down a
+       size or use a muted text token instead. */
+    --weight-regular: 400;
+    --weight-medium: 500;
+    --weight-semibold: 600;
+    --weight-bold: 700;
 
     /* Fluid admin type scale. Suffixes mirror Core Framework text steps. */
     --text-3xs: clamp(8px, calc(7.629px + 0.095vw), 9px);
@@ -57,7 +74,17 @@
     --space-11xl: clamp(56px, calc(50.057px + 1.524vw), 72px);
     --space-12xl: clamp(84px, calc(75.086px + 2.286vw), 108px);
 
-    /* Surfaces - Deep Ocean / Midnight Blue Palette */
+    /* Motion. Two families: --duration-* for how long, --ease-* for how.
+       Micro state changes (hover, toggle) use fast; standard transitions
+       use the default; entrances/panels use slow + --ease-out. */
+    --duration-fast: 90ms;
+    --duration: 140ms;
+    --duration-slow: 240ms;
+    --ease: cubic-bezier(0.25, 0, 0.15, 1);
+    --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+
+    /* Surfaces — Deep Ocean slate ramp. Lighter = higher in the stack.
+       Hover/active states lift the tone one step; never recolor a border. */
     --bg-body: #050b14;
     --bg-surface: #0a1120;
     --bg-surface-2: #111827;
@@ -65,18 +92,26 @@
     --bg-surface-4: #374151;
     --bg-surface-5: #4b5563;
 
-    /* Borders */
-    --border-subtle: #0a1120;
-    --border-muted: #111827;
-    --border: #1f2937;
-    --border-strong: #374151;
+    /* Borders — their own ramp, offset half a step ABOVE the surface scale so
+       a border is visible against both the surface it sits on and the one
+       below it. (They were previously byte-identical to the surface tokens,
+       which made hairlines invisible.) */
+    --border-subtle: #141d2e;
+    --border-muted: #1b2537;
+    --border: #26324a;
+    --border-strong: #3a4763;
+    /* Focus border for inputs / triggers — brand-tinted, pairs with
+       --shadow-input-focus. */
+    --border-focus: color-mix(in srgb, var(--brand) 55%, var(--overlay-20));
 
-    /* Text */
-    --text-bright: #f4f4f5;
-    --text: #ededed;
-    --text-muted: #a1a1aa;
-    --text-subtle: #787878;
-    --text-disabled: #52525b;
+    /* Text — slate-tinted neutrals matching the surface temperature.
+       bright→subtle pass WCAG AA (4.5:1) on every surface up to -3;
+       --text-disabled is for DISABLED states only, never content. */
+    --text-bright: #f7fafd;
+    --text: #e8edf5;
+    --text-muted: #a9b3c6;
+    --text-subtle: #8b96ab;
+    --text-disabled: #5d6675;
 
     /* White overlay scale. Suffix = alpha x 100. */
     --overlay: #ffffff;
@@ -102,6 +137,18 @@
     --scrim-70: rgba(0, 0, 0, 0.7);
     --scrim-80: rgba(0, 0, 0, 0.8);
     --scrim-90: rgba(0, 0, 0, 0.9);
+
+    /* Brand — Bambu sky. THE interactive accent: primary buttons, focus,
+       links, active nav indicators, selected states. One hue, used
+       functionally; decorative use stays banned.
+       --brand-ink is the dark text color used ON brand fills (≥8:1). */
+    --brand: #38bdf8;
+    --brand-hover: #5ecbfa;
+    --brand-active: #1ea8e8;
+    --brand-ink: #062033;
+    --brand-text: #7cd0fc;
+    --brand-10: rgba(56, 189, 248, 0.1);
+    --brand-20: rgba(56, 189, 248, 0.2);
 
     /* Identity accents. Each accent has one standard 10% surface tint. */
     --accent-1: #8ee6c8;
@@ -163,7 +210,7 @@
 
     /* Charts */
     --chart-default-tint: var(--accent-4);
-    --chart-series-min: #38bdf8; /* sky 400 — bright cyan-blue (mobile) */
+    --chart-series-min: var(--brand); /* bright sky (mobile) — same hue as brand */
     --chart-series-min-glow: rgba(56, 189, 248, 0.4);
     --chart-series-max: #4ade80; /* green 400 — neon green (desktop) */
     --chart-series-max-glow: rgba(74, 222, 128, 0.4);
@@ -171,9 +218,11 @@
     --chart-segment-empty-border: var(--overlay-5);
     --chart-track-bg: var(--overlay-5);
 
-    /* Radius */
+    /* Radius. sm = tight chips · default = editor controls · lg = compact
+       buttons/rows · panel = floating overlays · card = tiles · input = pills. */
     --radius-sm: 3px;
     --radius: 6px;
+    --radius-lg: 8px;
     --card-radius: 16px;
     --panel-radius: 12px;
     --input-radius: 1em;
@@ -190,33 +239,39 @@
         transparent
     );
 
-    /* Shadows and focus */
-    --focus-ring: 0 0 0 1px var(--overlay-20);
+    /* Shadows and focus.
+       Focus is brand-colored and 2px — visible on every surface of the dark
+       ramp (the old 1px white @20% ring failed visibility on near-black). */
+    --focus-ring: 0 0 0 2px color-mix(in srgb, var(--brand) 60%, transparent);
     --panel-blur: 24px;
     --shadow-panel-inset-bottom: inset 0 -1px 0 var(--scrim-40);
     --shadow-panel-drop: 0 12px 40px rgba(0, 0, 0, 0.65);
     --shadow-panel: var(--shadow-panel-inset-bottom), var(--shadow-panel-drop);
     --shadow-input-focus:
-        inset 0 0 5px rgba(255, 255, 255, 0.06),
-        inset 0 -5px 8px rgba(255, 255, 255, 0.09),
-        0 0 5px rgba(0, 0, 0, 0.24);
+        inset 0 0 0 1px color-mix(in srgb, var(--brand) 35%, transparent),
+        0 0 0 3px var(--brand-10);
     --shadow-tooltip:
         0 4px 16px var(--scrim-50), inset 0 1px 0 var(--overlay-5);
 
-    /* Premium UI Additions - Glass & Neon */
-    --text-gradient-premium: linear-gradient(135deg, #ffffff 0%, #93c5fd 100%);
-    --glass-surface: rgba(17, 24, 39, 0.45);
+    /* Glass — elevated "hero" tiles (dashboard widgets, onboarding bento).
+       Derived from the surface ramp (surface-2/3 alphas) so glass reads as
+       the same material lifted, not a second palette. Hover lifts the tone
+       (surface-3 base) and warms the border with the brand hue. */
+    --text-gradient-premium: linear-gradient(135deg, #ffffff 0%, #7cd0fc 100%);
+    --glass-surface: rgba(17, 24, 39, 0.55);
+    --glass-surface-hover: rgba(31, 41, 55, 0.62);
     --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-border-hover: rgba(147, 197, 253, 0.3);
+    --glass-border-hover: rgba(56, 189, 248, 0.28);
     --glass-blur: blur(32px);
-    --shadow-premium: 0 8px 32px rgba(0, 0, 0, 0.5), inset 0 1px 0 var(--glass-border);
-    --shadow-premium-hover: 0 12px 48px rgba(0, 0, 0, 0.6), 0 0 20px rgba(56, 189, 248, 0.15), inset 0 1px 0 var(--glass-border-hover);
+    --shadow-premium: 0 8px 32px rgba(2, 6, 16, 0.5), inset 0 1px 0 var(--glass-border);
+    --shadow-premium-hover: 0 12px 40px rgba(2, 6, 16, 0.6), 0 0 16px rgba(56, 189, 248, 0.1), inset 0 1px 0 var(--glass-border-hover);
 
-    /* Keycap */
-    --kbd-face-top: #434343; /* between surface-3 and surface-4 */
-    --kbd-face-bottom: #2f2f2f; /* just below surface-3 */
-    --kbd-face-top-hover: #4d4d4d;
-    --kbd-face-bottom-hover: #363636;
+    /* Keycap — slate faces sitting between surface-3 and surface-4 so keycaps
+       share the chrome's temperature. */
+    --kbd-face-top: #2b3648;
+    --kbd-face-bottom: #1d2636;
+    --kbd-face-top-hover: #333f54;
+    --kbd-face-bottom-hover: #232d3f;
     --kbd-border: var(--border);
     --kbd-text: var(--text-muted);
     --kbd-highlight: var(--overlay-5);
@@ -288,7 +343,12 @@
     /* Bespoke surface tints */
     --plugins-hero-tint-a: rgba(35, 92, 72, 0.32);
     --plugins-hero-tint-b: rgba(49, 64, 94, 0.24);
-    --canvas-live-scrim: rgba(24, 24, 27, 0.82);
+    --canvas-live-scrim: rgba(10, 17, 32, 0.82);
+    /* Admin page-shell aurora: two faint radial tints behind AdminPageLayout
+       headers — brand sky + lilac (accent-2), kept at ≤14% so content
+       contrast is unaffected. */
+    --admin-aurora-a: rgba(56, 189, 248, 0.14);
+    --admin-aurora-b: rgba(200, 182, 255, 0.12);
 }
 
 /* Reduced motion support — Constraint from UX Guideline #189 */

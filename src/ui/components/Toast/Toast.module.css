@@ -12,13 +12,13 @@
 
 .stack {
     position: fixed;
-    right: 16px;
-    bottom: 16px;
+    right: var(--space-3xl);
+    bottom: var(--space-3xl);
     z-index: var(--toast-z-index);
     display: flex;
     flex-direction: column-reverse;
     gap: var(--space-s);
-    max-width: min(420px, calc(100vw - 32px));
+    max-width: min(420px, calc(100vw - var(--space-8xl)));
     pointer-events: none;
 }
 
@@ -39,7 +39,7 @@
     color: var(--text);
     font-size: var(--text-s);
     line-height: 1.4;
-    animation: toast-enter 140ms ease-out;
+    animation: toast-enter var(--duration) var(--ease-out);
 }
 
 @keyframes toast-enter {

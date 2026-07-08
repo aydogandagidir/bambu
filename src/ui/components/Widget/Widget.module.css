@@ -1,6 +1,7 @@
 /**
- * Widget chrome styles. Achromatic surface, --tint property carries the
- * accent colour from the parent (title-dot, default chart fills).
+ * Widget chrome styles. Glass tile on the Deep Ocean ramp (--glass-*
+ * tokens); the --tint property carries the categorical accent colour from
+ * the parent (title-dot, default chart fills).
  */
 
 .widget {
@@ -25,13 +26,14 @@
     flex-direction: column;
     overflow: hidden;
     transition:
-        background 150ms ease,
-        transform 120ms ease,
-        box-shadow 150ms ease;
+        background var(--duration) var(--ease),
+        transform var(--duration) var(--ease),
+        border-color var(--duration) var(--ease),
+        box-shadow var(--duration) var(--ease);
 }
 
 .widget:hover {
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--glass-surface-hover);
     box-shadow: var(--shadow-premium-hover);
     transform: translateY(-2px);
     border-color: var(--glass-border-hover);
@@ -72,7 +74,7 @@
 .dot {
     width: 7px;
     height: 7px;
-    border-radius: 2px;
+    border-radius: var(--radius-sm);
     background: var(--tint);
 }
 
@@ -87,15 +89,15 @@
     height: 22px;
     display: grid;
     place-items: center;
-    border-radius: 6px;
+    border-radius: var(--radius);
     background: transparent;
     border: 0;
-    color: var(--text-disabled);
+    color: var(--text-subtle);
     cursor: pointer;
     opacity: 0;
     transition:
-        opacity 120ms ease,
-        background 120ms ease;
+        opacity var(--duration) var(--ease),
+        background var(--duration) var(--ease);
 }
 
 .widget:hover .menu {
@@ -112,7 +114,7 @@
     height: 22px;
     display: grid;
     place-items: center;
-    color: var(--text-disabled);
+    color: var(--text-subtle);
     cursor: grab;
 }
 
