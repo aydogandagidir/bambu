@@ -10,11 +10,14 @@
  * `errorMessage` prop — the MODAL catches them from ingestInput() and passes
  * them back here so the drop zone can display them inline.
  */
-import { useRef, useState, type DragEvent, type ChangeEvent } from 'react'
+import { useRef, useState, type DragEvent, type ChangeEvent, type FormEvent } from 'react'
 import { Button } from '@ui/components/Button'
+import { Checkbox } from '@ui/components/Checkbox'
+import { Input } from '@ui/components/Input'
 import { UploadIcon } from 'pixel-art-icons/icons/upload'
 import { FilePlusSolidIcon } from 'pixel-art-icons/icons/file-plus-solid'
 import { FolderGlyphIcon } from 'pixel-art-icons/icons/folder-glyph'
+import { GlobeSolidIcon } from 'pixel-art-icons/icons/globe-solid'
 import styles from './DropStep.module.css'
 
 interface DropStepProps {
@@ -26,12 +29,17 @@ interface DropStepProps {
   onFilesReady: (files: File[]) => void
   /** Called when a single .zip was dropped or picked. */
   onZipReady: (zipFile: File) => void
+  /** Called when the user wants the server to capture a bounded static snapshot from a URL. */
+  onCaptureUrlReady: (url: string) => void
 }
 
-export function DropStep({ busy, errorMessage, onFilesReady, onZipReady }: DropStepProps) {
+export function DropStep({ busy, errorMessage, onFilesReady, onZipReady, onCaptureUrlReady }: DropStepProps) {
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const folderInputRef = useRef<HTMLInputElement | null>(null)
   const [dragging, setDragging] = useState(false)
+  const [captureUrl, setCaptureUrl] = useState('')
+  const [authorized, setAuthorized] = useState(false)
+  const [localError, setLocalError] = useState<string | null>(null)
 
   async function dispatchFiles(files: File[]) {
     if (files.length === 0) return
@@ -80,8 +88,70 @@ export function DropStep({ busy, errorMessage, onFilesReady, onZipReady }: DropS
     void dispatchFiles(files)
   }
 
+  function handleCaptureSubmit(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    const nextUrl = captureUrl.trim()
+    if (!nextUrl) {
+      setLocalError('Enter a website URL.')
+      return
+    }
+    if (!authorized) {
+      setLocalError('Confirm that you have permission to import this site.')
+      return
+    }
+    setLocalError(null)
+    onCaptureUrlReady(nextUrl)
+  }
+
+  const visibleError = localError ?? errorMessage
+
   return (
     <div className={styles.wrapper}>
+      <form className={styles.capturePanel} onSubmit={handleCaptureSubmit}>
+        <div className={styles.captureHeader}>
+          <GlobeSolidIcon size={17} aria-hidden="true" className={styles.captureIcon} />
+          <div className={styles.captureTitleGroup}>
+            <p className={styles.captureTitle}>Capture from URL</p>
+            <p className={styles.captureHint}>Creates a bounded static snapshot for review before import</p>
+          </div>
+        </div>
+        <div className={styles.captureRow}>
+          <Input
+            type="url"
+            value={captureUrl}
+            placeholder="https://example.com"
+            aria-label="Website URL"
+            fieldSize="sm"
+            disabled={busy}
+            invalid={visibleError !== null}
+            onChange={(event) => {
+              setCaptureUrl(event.currentTarget.value)
+              if (localError) setLocalError(null)
+            }}
+          />
+          <Button
+            variant="primary"
+            size="sm"
+            type="submit"
+            disabled={busy}
+          >
+            Capture
+          </Button>
+        </div>
+        <label className={styles.authorizationRow}>
+          <Checkbox
+            checked={authorized}
+            disabled={busy}
+            boxSize="sm"
+            onCheckedChange={(checked) => {
+              setAuthorized(checked)
+              if (localError) setLocalError(null)
+            }}
+          />
+          <span>I have permission to import this website.</span>
+        </label>
+      </form>
+
       <div
         className={styles.dropZone}
         data-dragging={dragging ? 'true' : undefined}
@@ -125,9 +195,9 @@ export function DropStep({ busy, errorMessage, onFilesReady, onZipReady }: DropS
         </p>
       )}
 
-      {errorMessage && (
+      {visibleError && (
         <p className={styles.error} role="alert">
-          {errorMessage}
+          {visibleError}
         </p>
       )}
 

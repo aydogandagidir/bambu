@@ -49,12 +49,9 @@ import {
 } from '@dnd-kit/core'
 import { PlusIcon } from 'pixel-art-icons/icons/plus'
 import { LayoutSolidIcon } from 'pixel-art-icons/icons/layout-solid'
-import { ZapSolidIcon } from 'pixel-art-icons/icons/zap-solid'
 import { ChevronRightIcon } from 'pixel-art-icons/icons/chevron-right'
 import { AdminPageLayout } from '@admin/layouts/AdminPageLayout'
 import { useAuthenticatedAdminUser } from '@admin/sessionContext'
-import { useAdminNavigate } from '@admin/lib/useAdminNavigate'
-import { queuePendingAction } from '@admin/spotlight/pendingAction'
 import { Button } from '@ui/components/Button'
 import { FloatingActionBar } from '@ui/components/FloatingActionBar'
 import { cn } from '@ui/cn'
@@ -130,7 +127,6 @@ function greetingFor(displayName: string | null | undefined): string {
 
 export function DashboardPage() {
   const currentUser = useAuthenticatedAdminUser()
-  const navigate = useAdminNavigate()
   const widgets = useDashboardWidgets()
   const { facts, refresh: refreshOnboarding } = useOnboardingState()
   const layoutApi = useDashboardLayout()

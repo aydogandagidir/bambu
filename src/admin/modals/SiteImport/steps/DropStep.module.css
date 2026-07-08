@@ -5,6 +5,61 @@
   padding: var(--space-s) 0;
 }
 
+.capturePanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-s);
+  padding: var(--space-l);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--bg-surface);
+}
+
+.captureHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-s);
+  min-width: 0;
+}
+
+.captureIcon {
+  flex: 0 0 auto;
+  color: var(--text-subtle);
+}
+
+.captureTitleGroup {
+  min-width: 0;
+}
+
+.captureTitle {
+  margin: 0;
+  font-size: var(--text-s);
+  font-weight: 600;
+  color: var(--text);
+}
+
+.captureHint {
+  margin: var(--space-3xs) 0 0;
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+}
+
+.captureRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: var(--space-s);
+}
+
+.authorizationRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  min-width: 0;
+  font-size: var(--text-xs);
+  color: var(--text-muted);
+  cursor: default;
+}
+
 .dropZone {
   display: flex;
   flex-direction: column;
@@ -76,4 +131,10 @@
   height: 1px;
   opacity: 0;
   pointer-events: none;
+}
+
+@media (max-width: 560px) {
+  .captureRow {
+    grid-template-columns: minmax(0, 1fr);
+  }
 }

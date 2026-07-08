@@ -1,6 +1,7 @@
 import { useEffect } from 'react'
 import { AdminCanvasLayout } from '@admin/layouts/AdminCanvasLayout'
 import { consumePendingAction } from '@admin/spotlight/pendingAction'
+import { useAdminUi } from '@admin/state/adminUi'
 import { useEditorStore } from '@site/store/store'
 import { useEditorMcpBridge } from './agent/useEditorMcpBridge'
 
@@ -43,7 +44,7 @@ export function SitePage() {
 
       const importUrl = consumePendingAction('site.importUrl')
       if (importUrl) {
-        store.openImportUrlDialog()
+        useAdminUi.getState().openSiteImport()
         return true
       }
 

@@ -19,10 +19,10 @@ export function getSiteImportCommands(): Command[] {
     {
       id: 'editor.importSite',
       title: 'Import Site',
-      subtitle: 'Import pages or CMS bundles from files, folders, or .zip archives',
+      subtitle: 'Import pages or CMS bundles from a URL, files, folders, or .zip archives',
       group: 'editor',
       iconName: 'files-stack-2-solid',
-      keywords: ['import', 'site', 'zip', 'folder', 'bundle', 'json', 'cms', 'html', 'css'],
+      keywords: ['import', 'site', 'url', 'capture', 'zip', 'folder', 'bundle', 'json', 'cms', 'html', 'css'],
       workspaces: ['any'],
       capability: SITE_WRITE_CAPABILITIES,
       run: async (ctx) => {

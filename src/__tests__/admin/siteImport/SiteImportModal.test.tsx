@@ -1044,6 +1044,7 @@ describe('DropStep — error message rendering', () => {
         errorMessage={null}
         onFilesReady={noop}
         onZipReady={noop}
+        onCaptureUrlReady={noop}
       />,
     )
     expect(document.querySelector('[role="alert"]')).toBeNull()
@@ -1056,6 +1057,7 @@ describe('DropStep — error message rendering', () => {
         errorMessage="No importable files found."
         onFilesReady={noop}
         onZipReady={noop}
+        onCaptureUrlReady={noop}
       />,
     )
     const alert = document.querySelector('[role="alert"]')
@@ -1070,6 +1072,7 @@ describe('DropStep — error message rendering', () => {
         errorMessage={null}
         onFilesReady={noop}
         onZipReady={noop}
+        onCaptureUrlReady={noop}
       />,
     )
     const status = document.querySelector('[aria-live="polite"]')
@@ -1084,6 +1087,7 @@ describe('DropStep — error message rendering', () => {
         errorMessage={null}
         onFilesReady={noop}
         onZipReady={noop}
+        onCaptureUrlReady={noop}
       />,
     )
     const buttons = Array.from(document.querySelectorAll('button'))
@@ -1102,6 +1106,7 @@ describe('DropStep — error message rendering', () => {
         errorMessage={null}
         onFilesReady={(files) => { receivedFiles = files }}
         onZipReady={noop}
+        onCaptureUrlReady={noop}
       />,
     )
     const htmlFile = new File(['<html><body>hello</body></html>'], 'index.html', { type: 'text/html' })

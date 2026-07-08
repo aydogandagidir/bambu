@@ -40,6 +40,7 @@ import {
   type ConflictResolution,
   type StylesheetImportMode,
 } from '@core/siteImport'
+import { responseErrorMessage } from '@core/http/apiClient'
 import { useAdminUi } from '@admin/state/adminUi'
 import { useEditorStore } from '@site/store/store'
 import { DropStep } from './steps/DropStep'
@@ -186,6 +187,29 @@ export function SiteImportModal({ onCmsBundleImportComplete }: SiteImportModalPr
       setErrorMsg(err instanceof Error && err.name === 'SiteBundleParseError'
         ? describeCmsBundleLoadError(err)
         : describeIngestError(err))
+      setBusy(false)
+    }
+  }
+
+  async function handleCaptureUrlReady(url: string) {
+    setBusy(true)
+    setErrorMsg(null)
+    try {
+      const res = await fetch('/admin/api/cms/import-url/archive', {
+        method: 'POST',
+        credentials: 'include',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ url, confirmAuthorized: true }),
+      })
+      if (!res.ok) {
+        throw new Error(await responseErrorMessage(res, 'Unable to capture this URL'))
+      }
+      const zipBytes = new Uint8Array(await res.arrayBuffer())
+      const file = new File([zipBytes], 'bambu-site-capture.zip', { type: 'application/zip' })
+      await handleZipReady(file)
+    } catch (err) {
+      console.error('[SiteImportModal] URL capture failed:', err)
+      setErrorMsg(getErrorMessage(err, 'Unable to capture this URL'))
       setBusy(false)
     }
   }
@@ -577,6 +601,7 @@ export function SiteImportModal({ onCmsBundleImportComplete }: SiteImportModalPr
             errorMessage={errorMsg}
             onFilesReady={(files) => { void handleFilesReady(files) }}
             onZipReady={(file) => { void handleZipReady(file) }}
+            onCaptureUrlReady={(url) => { void handleCaptureUrlReady(url) }}
           />
         )}
 
