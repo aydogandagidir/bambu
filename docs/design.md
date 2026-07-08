@@ -506,6 +506,14 @@ Every color, gradient, and shadow in `src/admin/`, `src/admin/pages/site/`, and 
 
 **Exception:** `src/modules/*` is intentionally exempt — those CSS files ship to the published page output where admin tokens are not guaranteed to exist.
 
+### Server-rendered admin surfaces transcribe their tokens
+
+The Hub portal (`server/hub/portalPage.ts`) is admin chrome that lives outside the Vite build: a standalone document served on its own host (`app.*` / `hub.*`), so it cannot import `globals.css`. It still speaks the same language — glass tile, one input focus recipe, brand fill for the single dominant action, aurora page shell.
+
+`server/hub/theme.ts` carries the subset of tokens the portal uses, transcribed from `globals.css`. Never invent a value there; copy it. `hub-theme-tokens.test.ts` fails the build when a transcribed value drifts, when the portal reads a `var(--x)` the theme never declares, when the theme declares a token nothing uses, or when the markup carries a raw hex.
+
+Any future server-rendered admin surface follows the same shape: transcribe, then gate.
+
 ### No hardcoded spacing in admin / ui CSS modules
 
 Admin spacing values in `margin*`, `padding*`, `gap`, `row-gap`, `column-gap`, and CSS-authored SVG dimensions use `var(--space-*)` tokens from `src/styles/globals.css`. Gated by `admin-spacing-token-policy.test.ts`.

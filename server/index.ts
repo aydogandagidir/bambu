@@ -19,6 +19,7 @@ await runMigrations(defaultDb, migrations)
 
 // Initialize SaaS Hub Database
 import { initHubDb, handleHubRequest, resolveTenantDb } from './hub/router'
+import { isHubHost } from './hub/domain'
 import { parseSqlitePath, isSqliteUrl } from './db/index'
 import { dirname } from 'node:path'
 
@@ -101,12 +102,12 @@ Bun.serve({
       const host = req.headers.get('host') || ''
       
       // 1. Hub Portal Routing
-      if (host.startsWith('app.bluedev.') || host.startsWith('hub.bluedev.') || host === 'app.localhost:3001') {
+      if (isHubHost(host)) {
         return handleHubRequest(req, dataDir)
       }
       
       // 2. Tenant Resolution
-      let tenantDb = await resolveTenantDb(host, dataDir)
+      const tenantDb = await resolveTenantDb(host, dataDir)
       
       // Fallback to default DB if no tenant matched (e.g. for the main landing page bambu.bluedev.dev)
       const activeDb = tenantDb || defaultDb
