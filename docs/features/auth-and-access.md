@@ -357,6 +357,39 @@ The expected origin is derived **only** from the configured public origin set at
 
 ---
 
+## The Hub portal
+
+The SaaS portal (`app.*` / `hub.*`) has its own user table, its own session table, and its own `hub_session_id` cookie — it authenticates workspace *owners*, not CMS users. What it does **not** have is its own security stack. `server/hub/security.ts` composes the primitives above:
+
+| Concern | Reuses |
+|---|---|
+| Password hashing | `hashPassword` / `verifyPassword` (argon2id) |
+| Timing-safe unknown account | `getDummyPasswordHash()` |
+| Session token | `createSessionToken()` in the cookie, `hashSessionToken()` in `hub_sessions.idHash` |
+| CSRF | `originAllowed()` via `hubOriginViolation(req)` |
+| `Secure` cookie flag | `publicOriginIsHttps()` |
+| Client IP | `clientIp()` — `stampSocketIp` runs before hub routing |
+| Rate limiting | the `RateLimiter` class, with hub-owned buckets |
+
+Buckets are **not** shared with the CMS limiters: portal traffic and admin traffic must not be able to exhaust each other's quota.
+
+| Limiter                     | Key                   | Limit | Window     |
+|-----------------------------|-----------------------|-------|------------|
+| `hubLoginPerIpRateLimit`    | `<ip>`                | 30    | 10 minutes |
+| `hubLoginRateLimit`         | `<ip>\|<email>` tuple | 5     | 15 minutes |
+| `hubRegisterRateLimit`      | `<ip>`                | 5     | 60 minutes |
+| `hubDeployRateLimit`        | `<hub user id>`       | 10    | 60 minutes |
+
+Deploy gets its own bucket because one call writes a database file and runs every migration against it — the most expensive thing an authenticated caller can ask of the process.
+
+> **Set `TRUSTED_PROXY_CIDRS` in production.** Behind a TLS-terminating edge with no trusted-proxy allowlist, `clientIp` can only see the proxy's socket address, so *every* per-IP bucket above — plus the CMS's `loginPerIpRateLimit` — collapses into one bucket shared by the whole platform. Thirty failed logins would lock out every user; five signups would close registration for an hour. `proxyAttributionUnconfigured()` detects the likely case (https public origin, empty CIDR list) and the boot sequence warns.
+
+**Why the Origin check is load-bearing here.** A tenant site (`acme.bluedev.dev`) and the portal (`app.bluedev.dev`) share a registrable domain, so they are *same-site*: `SameSite=Lax` still attaches the hub session cookie to a POST issued from a tenant page. That page's HTML is authored by its owner, through the CMS. `hubOriginViolation` is the only thing between it and `POST /api/hub/workspaces`.
+
+**CSP.** The portal is a server-rendered document, so it ships a full nonce-based policy per response (`hubPortalCsp`) rather than the admin's `frame-ancestors`-only header — no `'unsafe-inline'`, so an injected `<script>` never executes. `applySecurityHeaders(res, pathname, { denyFraming: true })` adds `X-Frame-Options` and leaves that stricter CSP alone.
+
+---
+
 ## CORS
 
 Production is **same-origin** (the admin SPA, API, and published pages all serve from one Bun process behind Caddy). The fetch handler in `server/index.ts` only emits CORS headers when the request's `Origin` is on `DEV_ORIGIN_ALLOWLIST`:

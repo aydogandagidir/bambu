@@ -44,9 +44,10 @@ const globalTokens = parseDeclarations(rootBlock(readFileSync(GLOBALS_CSS, 'utf8
 const hubTokens = parseDeclarations(rootBlock(HUB_TOKENS))
 
 /** Auth and dashboard are separate documents — both must hold the line. */
+const NONCE = 'dGVzdC1ub25jZS0xMjM0'
 const renders = [
-  { view: 'auth', html: renderHubPortal({ authenticated: false }) },
-  { view: 'dashboard', html: renderHubPortal({ authenticated: true }) },
+  { view: 'auth', html: renderHubPortal({ authenticated: false, nonce: NONCE }) },
+  { view: 'dashboard', html: renderHubPortal({ authenticated: true, nonce: NONCE }) },
 ]
 const portalHtml = renders.map(render => render.html).join('\n')
 

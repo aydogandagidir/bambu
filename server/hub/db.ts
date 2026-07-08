@@ -8,8 +8,15 @@ export interface HubUser {
   createdAt: string
 }
 
+/**
+ * A live portal session.
+ *
+ * `idHash` is `sha256(token)` — the raw token exists only in the user's cookie.
+ * A dump of `hub.db` therefore yields no usable session, the same guarantee the
+ * CMS `sessions` table makes with its `id_hash` column.
+ */
 export interface HubSession {
-  id: string
+  idHash: string
   userId: string
   expiresAt: number
 }
@@ -24,14 +31,25 @@ export interface Tenant {
 }
 
 export class HubDatabase {
-  private db: DbClient
+  private readonly db: DbClient
 
-  constructor(filename: string) {
-    this.db = createSqliteClient(filename)
-    this.initSchema()
+  private constructor(db: DbClient) {
+    this.db = db
   }
 
-  private async initSchema() {
+  /**
+   * Open the hub database and bring its schema up to date before any request
+   * can reach it. The schema work is awaited here rather than fired off from a
+   * constructor — a floating `initSchema()` promise let the first request race
+   * table creation.
+   */
+  static async open(filename: string): Promise<HubDatabase> {
+    const hub = new HubDatabase(createSqliteClient(filename))
+    await hub.migrate()
+    return hub
+  }
+
+  private async migrate() {
     await this.db.unsafe(`
       CREATE TABLE IF NOT EXISTS hub_users (
         id TEXT PRIMARY KEY,
@@ -42,7 +60,7 @@ export class HubDatabase {
     `)
     await this.db.unsafe(`
       CREATE TABLE IF NOT EXISTS hub_sessions (
-        id TEXT PRIMARY KEY,
+        idHash TEXT PRIMARY KEY,
         userId TEXT NOT NULL,
         expiresAt INTEGER NOT NULL,
         FOREIGN KEY (userId) REFERENCES hub_users(id) ON DELETE CASCADE
@@ -63,6 +81,18 @@ export class HubDatabase {
     } catch (_err) {
       // The column already exists — SQLite has no `ADD COLUMN IF NOT EXISTS`.
     }
+    try {
+      // Sessions used to be keyed by the raw token. Rename the column in place
+      // (non-destructive) so a pre-existing hub.db keeps its rows; those rows
+      // hold plaintext ids that no longer match a `sha256(token)` lookup, so
+      // they are inert and age out of `deleteExpiredSessions` within the TTL.
+      // Everyone gets logged out once. That is the price of not storing
+      // bearer tokens at rest.
+      await this.db.unsafe(`ALTER TABLE hub_sessions RENAME COLUMN id TO idHash`)
+    } catch (_err) {
+      // Fresh database — the table was created with `idHash` above.
+    }
+    await this.deleteExpiredSessions()
   }
 
   // --- Users ---
@@ -86,18 +116,23 @@ export class HubDatabase {
   // --- Sessions ---
   async createHubSession(session: HubSession): Promise<void> {
     await this.db`
-      INSERT INTO hub_sessions (id, userId, expiresAt)
-      VALUES (${session.id}, ${session.userId}, ${session.expiresAt})
+      INSERT INTO hub_sessions (idHash, userId, expiresAt)
+      VALUES (${session.idHash}, ${session.userId}, ${session.expiresAt})
     `
   }
 
-  async getHubSession(id: string): Promise<HubSession | null> {
-    const result = await this.db`SELECT * FROM hub_sessions WHERE id = ${id}`
+  async getHubSession(idHash: string): Promise<HubSession | null> {
+    const result = await this.db`SELECT * FROM hub_sessions WHERE idHash = ${idHash}`
     return (result.rows[0] as unknown as HubSession) ?? null
   }
 
-  async deleteHubSession(id: string): Promise<void> {
-    await this.db`DELETE FROM hub_sessions WHERE id = ${id}`
+  async deleteHubSession(idHash: string): Promise<void> {
+    await this.db`DELETE FROM hub_sessions WHERE idHash = ${idHash}`
+  }
+
+  /** Housekeeping on boot — expired rows are dead weight, never valid sessions. */
+  async deleteExpiredSessions(now: number = Date.now()): Promise<void> {
+    await this.db`DELETE FROM hub_sessions WHERE expiresAt < ${now}`
   }
 
   // --- Tenants ---
@@ -129,11 +164,11 @@ export function getTenantDb(tenantId: string, dataDir: string): DbClient {
   if (tenantDbCache.has(tenantId)) {
     return tenantDbCache.get(tenantId)!
   }
-  
+
   // For SQLite, the database file will be tenant_<id>.db in the dataDir
   const dbPath = `${dataDir}/tenant_${tenantId}.db`
   const db = createSqliteClient(dbPath)
-  
+
   tenantDbCache.set(tenantId, db)
   return db
 }

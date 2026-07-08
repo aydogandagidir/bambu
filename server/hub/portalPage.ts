@@ -17,6 +17,10 @@ import { SUBDOMAIN_PATTERN, WORKSPACE_DOMAIN_SUFFIX } from './domain'
  * Auth and dashboard are two documents, not one document with a `.hidden`
  * class: the session decides which, and both transitions (login, logout) end
  * in `location.reload()`. Nothing to toggle, so nothing to get wrong.
+ *
+ * The `<style>` and `<script>` carry a per-response CSP nonce (see
+ * `hubPortalCsp`), so the policy needs no `'unsafe-inline'` — an injected
+ * `<script>` would not execute even if a sink were reintroduced.
  */
 
 const STYLES = `
@@ -629,9 +633,10 @@ const DASH_VIEW = `
       </section>
     </main>`
 
-export function renderHubPortal(options: { authenticated: boolean }): string {
+export function renderHubPortal(options: { authenticated: boolean; nonce: string }): string {
   const view = options.authenticated ? DASH_VIEW : AUTH_VIEW
   const script = options.authenticated ? DASH_SCRIPT : AUTH_SCRIPT
+  const nonce = options.nonce
 
   return `<!DOCTYPE html>
 <html lang="en">
@@ -639,12 +644,12 @@ export function renderHubPortal(options: { authenticated: boolean }): string {
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Bambu Cloud Hub</title>
-    <style>${STYLES}</style>
+    <style nonce="${nonce}">${STYLES}</style>
   </head>
   <body>
     <div class="aurora"></div>
 ${view}
-    <script>${SHARED_SCRIPT}${script}</script>
+    <script nonce="${nonce}">${SHARED_SCRIPT}${script}</script>
   </body>
 </html>`
 }

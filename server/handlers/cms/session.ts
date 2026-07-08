@@ -1,19 +1,15 @@
 /**
- * Session cookie helpers and constant-time login dummy hash.
+ * Admin session cookie helpers.
  *
- * Two concerns colocated because both are about the login/session boundary:
+ * `sessionCookie` / `clearSessionCookie` build the `Set-Cookie` headers used by
+ * the auth handlers. They set the `Secure` flag from the configured public
+ * origin (so cookies are reliably Secure on managed HTTPS platforms that
+ * terminate TLS at the edge) and fall back to the request URL.
  *
- *  - `sessionCookie` / `clearSessionCookie` build the `Set-Cookie` headers
- *    used by the auth handlers. They set the `Secure` flag from the configured
- *    public origin (so cookies are reliably Secure on managed HTTPS platforms
- *    that terminate TLS at the edge) and fall back to the request URL.
- *
- *  - `getDummyPasswordHash` returns a fixed argon2id hash, computed once
- *    per process. The login handler verifies against it on the
- *    "no such user" branch so latency stays constant and an attacker
- *    can't enumerate emails by timing.
+ * The constant-time login dummy hash lives in `auth/tokens.ts` — the Hub portal
+ * needs it too, and it is an auth primitive, not a CMS-handler concern.
  */
-import { SESSION_COOKIE_NAME, hashPassword } from '../../auth/tokens'
+import { SESSION_COOKIE_NAME } from '../../auth/tokens'
 import { publicOriginIsHttps } from '../../auth/security'
 
 /**
@@ -46,23 +42,4 @@ export function sessionCookie(req: Request, token: string, expires: Date): strin
 export function clearSessionCookie(req: Request): string {
   const attrs = sessionCookieAttributes(requestIsHttps(req))
   return `${SESSION_COOKIE_NAME}=; ${attrs}; Max-Age=0`
-}
-
-/**
- * A fixed argon2id hash, computed once per process. Used by the login handler
- * as the verification target when the supplied email doesn't match any admin
- * user — keeping the response time constant prevents an attacker from
- * learning which emails belong to admins via timing analysis.
- *
- * The hashed plaintext is deliberately not a real password and never grants
- * access; verifyPassword against this hash returns false for every input.
- *
- * Eagerly kicked off at module load so the very first unknown-email login
- * doesn't pay the one-time hashing cost (~50ms) and stand out as slower
- * than the steady-state.
- */
-const dummyPasswordHashCache: Promise<string> = hashPassword('not-a-real-account-placeholder')
-
-export function getDummyPasswordHash(): Promise<string> {
-  return dummyPasswordHashCache
 }
