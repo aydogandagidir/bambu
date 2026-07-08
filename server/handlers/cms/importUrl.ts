@@ -1,7 +1,7 @@
 import { Type } from '@sinclair/typebox'
 import { Window } from 'happy-dom'
 import { jsonResponse, badRequest, readValidatedBody } from '../../http'
-import { requireCapability } from '../../auth/capabilities'
+import { requireCapability } from '../../auth/authz'
 import type { DbClient } from '../../db/client'
 import { acceptUploadedMedia } from './mediaUpload'
 import type { CmsHandlerOptions } from './shared'
@@ -39,14 +39,15 @@ function isSafeUrl(urlString: string): boolean {
 export async function handleImportUrlRoute(
   req: Request,
   db: DbClient,
-  options: CmsHandlerOptions,
+  _options: CmsHandlerOptions,
 ): Promise<Response | null> {
   const url = new URL(req.url)
   if (req.method !== 'POST' || url.pathname !== '/admin/api/cms/import-url') {
     return null
   }
 
-  const { user } = await requireCapability(req, db, 'site.write')
+  const actor = await requireCapability(req, db, 'site.structure.edit')
+  if (actor instanceof Response) return actor
 
   const body = await readValidatedBody(req, ImportUrlRequestSchema)
   if (!body) return badRequest('Invalid request body')
@@ -126,7 +127,7 @@ export async function handleImportUrlRoute(
           maxBytes: 10 * 1024 * 1024, // 10MB per image
           allowedMimes: ['image/jpeg', 'image/png', 'image/webp', 'image/gif', 'image/svg+xml'],
           role: 'original',
-          uploadedByUserId: user.id,
+          uploadedByUserId: actor.id,
           oversizedMessage: `Image ${filename} is too large.`,
           unsupportedMessage: `Image format for ${filename} is not supported.`,
         })

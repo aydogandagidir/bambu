@@ -41,6 +41,12 @@ export function SitePage() {
         return true
       }
 
+      const importUrl = consumePendingAction('site.importUrl')
+      if (importUrl) {
+        store.openImportUrlDialog()
+        return true
+      }
+
       return true // hydrated but nothing queued — stop waiting
     }
 

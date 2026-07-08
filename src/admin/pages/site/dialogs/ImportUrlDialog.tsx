@@ -7,7 +7,7 @@ import { getErrorMessage } from '@core/utils/errorMessage'
 import { requestEditorSave } from '@admin/state/adminEvents'
 import { useEditorStore } from '@site/store/store'
 import { importHtml } from '@core/htmlImport/walkAndMap'
-import { cssToStyleRules } from '@core/css/cssParser'
+import { cssToStyleRules } from '@core/siteImport/cssToStyleRules'
 import styles from './ImportUrlDialog.module.css'
 
 export function ImportUrlDialog() {
@@ -70,7 +70,7 @@ function ImportUrlDialogBody({ onClose }: { onClose: () => void }) {
 
       // Convert HTML to Bambu nodes
       const importResult = importHtml(html)
-      const styleRules = cssToStyleRules(importResult.styleCss)
+      const styleRules = cssToStyleRules(importResult.styleCss).rules
 
       // Insert into the current page
       insertImportedNodes(rootNodeId, importResult, { styleRules })

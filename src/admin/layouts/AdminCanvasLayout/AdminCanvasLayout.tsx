@@ -40,9 +40,6 @@
 import { Toolbar } from '@admin/pages/site/toolbar/Toolbar'
 
 import { PublishButton } from '@admin/pages/site/toolbar/PublishButton'
-import { DownloadIcon } from 'pixel-art-icons/icons/download'
-import { Tooltip } from '@ui/components/Tooltip'
-import { Button } from '@ui/components/Button'
 import { useEditorSelectPreference } from '@admin/pages/site/preferences/editorPreferences'
 import { usePersistence } from '@admin/pages/site/hooks/usePersistence'
 import { useSiteEditorUrlSync } from '@admin/pages/site/hooks/useSiteEditorUrlSync'
@@ -129,7 +126,6 @@ export function AdminCanvasLayout() {
   // shell reads from it too.
   const settingsOpen = useAdminUi((s) => s.settingsOpen)
   const importUrlDialogOpen = useEditorStore((s) => s.importUrlDialogOpen)
-  const openImportUrlDialog = useEditorStore((s) => s.openImportUrlDialog)
   const publishSiteSummary = useAdminUi((s) => s.setSiteSummary)
   const currentUser = useCurrentAdminUser()
   const pluginBackgroundWorkEnabled = canRunPluginBackgroundWork(currentUser)
@@ -234,11 +230,7 @@ export function AdminCanvasLayout() {
           )}
           rightSlot={(
             <>
-              <Tooltip content="Import Site from URL" side="bottom">
-                <Button variant="secondary" onClick={openImportUrlDialog} aria-label="Import Site from URL">
-                  <DownloadIcon size={16} />
-                </Button>
-              </Tooltip>
+
               <PublishButton
                 enabled={canPublishPages}
                 onSave={canSaveSite ? persistence.saveSite : undefined}

@@ -34,6 +34,7 @@ import { safeParseJson } from '@core/utils/jsonValidate'
  */
 const PENDING_ACTION_TYPES = [
   'site.newPage',
+  'site.importUrl',
   'site.newVisualComponent',
   'content.newCollection',
   'content.newDocument',
