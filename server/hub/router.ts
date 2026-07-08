@@ -1,4 +1,6 @@
 import { HubDatabase, getTenantDb, type Tenant, type HubUser } from './db'
+import { Type } from '@sinclair/typebox'
+import { readValidatedBody } from '../http'
 import { runMigrations } from '../db/runMigrations'
 import { sqliteMigrations } from '../db/migrations-sqlite'
 import { password } from 'bun'
@@ -36,8 +38,9 @@ export async function handleHubRequest(req: Request, dataDir: string): Promise<R
   // Auth API
   if (req.method === 'POST' && url.pathname === '/api/hub/auth/register') {
     try {
-      const { email, rawPassword } = await req.json()
-      if (!email || !rawPassword) return new Response('Missing fields', { status: 400 })
+      const body = await readValidatedBody(req, Type.Object({ email: Type.String(), rawPassword: Type.String() }))
+      if (!body) return new Response('Missing fields', { status: 400 })
+      const { email, rawPassword } = body
       
       const existing = await hubDb!.getHubUserByEmail(email)
       if (existing) return new Response('Email in use', { status: 409 })
@@ -69,7 +72,9 @@ export async function handleHubRequest(req: Request, dataDir: string): Promise<R
 
   if (req.method === 'POST' && url.pathname === '/api/hub/auth/login') {
     try {
-      const { email, rawPassword } = await req.json()
+      const body = await readValidatedBody(req, Type.Object({ email: Type.String(), rawPassword: Type.String() }))
+      if (!body) return new Response('Invalid credentials', { status: 401 })
+      const { email, rawPassword } = body
       const user = await hubDb!.getHubUserByEmail(email)
       if (!user) return new Response('Invalid credentials', { status: 401 })
       
@@ -122,8 +127,9 @@ export async function handleHubRequest(req: Request, dataDir: string): Promise<R
       const user = await getHubUserFromReq(req)
       if (!user) return new Response('Unauthorized', { status: 401 })
       
-      const { subdomain } = await req.json()
-      if (!subdomain) return new Response('Missing fields', { status: 400 })
+      const body = await readValidatedBody(req, Type.Object({ subdomain: Type.String() }))
+      if (!body) return new Response('Missing fields', { status: 400 })
+      const { subdomain } = body
       
       const domain = `${subdomain}.bluedev.dev`
       if (await hubDb!.getTenantByDomain(domain)) {

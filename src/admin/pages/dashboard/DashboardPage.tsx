@@ -59,6 +59,7 @@ import { Button } from '@ui/components/Button'
 import { FloatingActionBar } from '@ui/components/FloatingActionBar'
 import { cn } from '@ui/cn'
 import type { DashboardWidgetDefinition } from '@core/dashboard'
+import { DashboardHeaderActions } from './components/DashboardHeaderActions'
 import {
   GRID_DROP_ID,
   GRID_ROW_HEIGHT,
@@ -501,22 +502,7 @@ export function DashboardPage() {
       workspace="dashboard"
       title={greetingFor(currentUser.displayName)}
       description="Your site at a glance — visitors, content and plugins. Configure the grid to surface exactly what you watch."
-      actions={(
-        <>
-          <Button variant="ghost" size="sm" onClick={() => {
-            queuePendingAction('site.importUrl')
-            navigate('/admin/site')
-          }}>
-            Import URL
-          </Button>
-          <Button variant="ghost" size="sm">
-            <ZapSolidIcon size={11} aria-hidden="true" /> Publish all
-          </Button>
-          <Button variant="primary" onClick={() => navigate('/admin/site')}>
-            <PlusIcon size={12} aria-hidden="true" /> New page
-          </Button>
-        </>
-      )}
+      actions={<DashboardHeaderActions />}
     >
       <div className={styles.crumbs}>
         <span>Admin</span>

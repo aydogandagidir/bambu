@@ -8,6 +8,8 @@ import { requestEditorSave } from '@admin/state/adminEvents'
 import { useEditorStore } from '@site/store/store'
 import { importHtml } from '@core/htmlImport/walkAndMap'
 import { cssToStyleRules } from '@core/siteImport/cssToStyleRules'
+import { apiRequest } from '@core/http/apiClient'
+import { Type } from '@core/utils/typeboxHelpers'
 import styles from './ImportUrlDialog.module.css'
 
 export function ImportUrlDialog() {
@@ -53,29 +55,25 @@ function ImportUrlDialogBody({ onClose }: { onClose: () => void }) {
       setError(null)
       setStats(null)
 
-      const res = await fetch('/admin/api/cms/import-url', {
+      const res = await apiRequest('/admin/api/cms/import-url', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ url: url.trim() }),
+        body: { url: url.trim() },
+        schema: Type.Object({
+          html: Type.String(),
+          stats: Type.Object({
+            imagesDownloaded: Type.Number()
+          })
+        })
       })
 
-      if (!res.ok) {
-        const data = await res.json().catch(() => ({}))
-        throw new Error(data.error || `Server error: ${res.statusText}`)
-      }
-
-      const { html, stats: importStats } = await res.json()
-
       // Convert HTML to Bambu nodes
-      const importResult = importHtml(html)
+      const importResult = importHtml(res.html)
       const styleRules = cssToStyleRules(importResult.styleCss).rules
 
       // Insert into the current page
       insertImportedNodes(rootNodeId, importResult, { styleRules })
 
-      setStats(importStats)
+      setStats(res.stats)
       setStatus('success')
       
       requestEditorSave()
@@ -83,7 +81,7 @@ function ImportUrlDialogBody({ onClose }: { onClose: () => void }) {
       pushToast({
         kind: 'success',
         title: 'Site Imported Successfully',
-        body: `Imported ${importResult.nodes.length} elements and ${importStats.imagesDownloaded} images.`,
+        body: `Imported ${importResult.nodes.length} elements and ${res.stats.imagesDownloaded} images.`,
         location: 'site-editor',
       })
 
