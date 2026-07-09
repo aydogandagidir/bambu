@@ -277,6 +277,39 @@ Editor scrollbars are global chrome and stay achromatic. `globals.css` owns `--s
 
 Use `--shadow-panel` directly when you need a floating-panel feel; don't recompose from the sub-tokens.
 
+### Light and atmosphere — "Gece Penceresi"
+
+The admin is lit as if from one soft source above, and the hero surfaces float in front of a living sky. This is expressed in **two tiers** — keep them separate.
+
+**Tier 1 — the light law (durable, every elevated surface).** Two tokens make a surface read as physically lit from above: the upper edge catches light, the lower edge recedes.
+
+| Token | Use |
+|-------|-----|
+| `--hairline-lit` | `linear-gradient(180deg, var(--overlay-20), var(--overlay-5))` — a top-lit border painted in the `border-box`. |
+| `--shadow-specular-rim` | `inset 0 1px 0 var(--overlay-10)` — a crisp lit top rim, appended to a surface's drop shadow. |
+
+Recipe for a floating surface with fill token `F`:
+
+```css
+border: 1px solid var(--overlay-10);          /* fallback */
+background:
+    linear-gradient(var(F), var(F)) padding-box,
+    var(--hairline-lit) border-box;
+background-color: var(F);
+box-shadow: <existing drop shadow>, var(--shadow-specular-rim);
+```
+```css
+@supports (background-clip: border-box) { .surface { border-color: transparent; } }
+```
+
+Applied at the shared **primitives** so it propagates: `Dialog .dialog` (every modal), `ContextMenu .menu` (every dropdown), `Toast` (rim only — it keeps its solid border for the per-kind coloured left edge), plus bespoke floating shells (Spotlight, SettingsModal, DateTimePicker, and the site-editor floating panels). **Do not** apply it to controls (inputs, toggles, pills, keycaps — atmosphere never dresses a control), flat 1px-gap cards, docked shells/rails, canvas chrome (its own neon-ring language), or per-tile glass (Widget already carries a rim; the auth card is the reference implementation in `AdminEntry.module.css`).
+
+**Tier 2 — the aurora atmosphere (hero surfaces only).** A living sky of slow, GPU-cheap blurred blobs behind frosted glass. **Only** at page/shell level: the auth screen (`--auth-aurora-*` + `--auth-vignette` + the frosted `--auth-card-*` recipe) and the admin page shell (`--admin-aurora-a/b/c` in `AdminPageLayout .meshBackground`). **Never** per-tile, never behind dense tables, never on a control.
+
+**Governance — the one-accent law holds.** `--brand` stays the single interactive accent; every aurora / atmosphere hue is non-interactive background. AA contrast is measured against a **solid** surface floor (`--auth-card-surface`, `--bg-surface`), never the moving sky. All atmosphere motion is `transform`/`opacity`/`filter` only and freezes to a composed static frame under `prefers-reduced-motion`.
+
+**Named kinetic tier** — reserved for hero / celebration surfaces (`--ease-spring`, `--duration-entrance`, `--duration-spring`). Daily-use chrome keeps the calm `--duration-fast/-/-slow` (90/140/240 ms) motion.
+
 ### Typography
 
 ```css
