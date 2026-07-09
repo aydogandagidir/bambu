@@ -31,9 +31,10 @@
     transition: background-color 150ms ease;
 }
 
+/* ON is the brand state — brand marks every selected control (design.md). */
 .trackOn {
-    background: var(--bg-surface-3);
-    border-color: var(--bg-surface-3);
+    background: var(--brand);
+    border-color: var(--brand);
 }
 
 .trackOff {
@@ -50,7 +51,7 @@
 }
 
 .switch[data-hit-area="true"] .trackOn {
-    background: var(--overlay);
+    background: var(--brand);
 }
 
 .switch[data-hit-area="true"] .trackOff {

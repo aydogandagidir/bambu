@@ -25,9 +25,16 @@
         color var(--duration) var(--ease),
         background-color var(--duration) var(--ease),
         border-color var(--duration) var(--ease),
+        transform var(--duration-fast) var(--ease),
         opacity var(--duration) var(--ease);
     /* Prevent text-overflow in tight toolbars */
     flex-shrink: 0;
+}
+
+/* A crisp press on every button — instantaneous transform state, so it is
+   reduced-motion safe and GPU-cheap. */
+.btn:active:not(:disabled):not([aria-disabled="true"]) {
+    transform: translateY(1px);
 }
 
 .btn:focus-visible {
@@ -190,17 +197,20 @@
 /* ── Variant: primary ─────────────────────────────────────────────────────── */
 /* The single dominant action of a view: brand fill + dark ink (≥8:1).
    Everything else stays neutral, so the eye lands here first. */
+/* A top-down gloss over the brand fill gives the primary CTA material depth —
+   light on the top edge, receding downward. This is a MATERIAL treatment
+   (overlay on the fill), not the hero atmosphere, so the controls ban holds. */
 .variant-primary {
-    background: var(--brand);
+    background: linear-gradient(180deg, var(--overlay-10), transparent 45%), var(--brand);
     color: var(--brand-ink);
 }
 
 .variant-primary:hover {
-    background: var(--brand-hover);
+    background: linear-gradient(180deg, var(--overlay-10), transparent 45%), var(--brand-hover);
 }
 
 .variant-primary:active {
-    background: var(--brand-active);
+    background: linear-gradient(180deg, var(--overlay-10), transparent 45%), var(--brand-active);
 }
 
 /* ── Variant: secondary ───────────────────────────────────────────────────── */

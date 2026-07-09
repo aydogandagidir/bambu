@@ -18,8 +18,8 @@
 
 .tab {
     padding: var(--space-s) var(--space-2xl);
-    font-size: 0.875rem; /* 14px */
-    font-weight: 500;
+    font-size: var(--text-l);
+    font-weight: var(--weight-medium);
     color: var(--text-subtle);
     background: none;
     border: none;
@@ -32,8 +32,8 @@
     font-family: inherit;
     line-height: 1;
     transition:
-        color 0.1s ease,
-        border-color 0.1s ease;
+        color var(--duration-fast) var(--ease),
+        border-color var(--duration-fast) var(--ease);
 }
 
 .tab:hover {
@@ -48,10 +48,12 @@
 
 /* ── Active tab ───────────────────────────────────────────────────────────── */
 
+/* Active tab is marked in brand — the same active-nav accent as the section
+   rail, so "where am I" reads in one language across the app. */
 .tabActive {
-    color: var(--text);
-    border-bottom-color: var(--text);
-    font-weight: 600;
+    color: var(--text-bright);
+    border-bottom-color: var(--brand);
+    font-weight: var(--weight-semibold);
 }
 
 /* ── Tab panel ────────────────────────────────────────────────────────────── */
