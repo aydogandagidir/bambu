@@ -27,7 +27,7 @@
   background: var(--bg-surface);
   backdrop-filter: blur(var(--panel-blur));
   border: 1px solid var(--overlay-10);
-  border-radius: 12px;
+  border-radius: var(--panel-radius);
   box-shadow: var(--shadow-panel);
   overflow: hidden;
   outline: none;

@@ -154,7 +154,7 @@
     height: 28px;
     padding: 0 var(--space-xl);
     border: 1px solid color-mix(in srgb, var(--text) 14%, transparent);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--bg-surface);
     color: var(--text-bright);
     font-size: var(--text-xs);

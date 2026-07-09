@@ -76,7 +76,7 @@
   overflow: hidden;
   padding: var(--space-4xs) var(--space-2xs);
   border: 1px solid color-mix(in srgb, var(--info-text) 22%, transparent);
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: color-mix(in srgb, var(--info-text) 12%, transparent);
   color: var(--info-text);
   font-family: monospace;

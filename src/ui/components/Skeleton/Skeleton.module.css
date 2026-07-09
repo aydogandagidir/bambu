@@ -58,7 +58,7 @@
 
 .skeletonCard {
     background: var(--bg-surface-2);
-    border-radius: 16px;
+    border-radius: var(--card-radius);
     padding: var(--space-xl) var(--space-2xl);
 }
 

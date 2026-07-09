@@ -90,7 +90,7 @@
     align-items: center;
     gap: var(--space-px);
     padding: var(--space-4xs);
-    border-radius: 12px;
+    border-radius: var(--panel-radius);
     background: var(--bg-body);
     box-shadow: var(--shadow-panel);
     color: var(--text);
@@ -287,7 +287,7 @@
 
 .dropIndicator[data-position="before"],
 .dropIndicator[data-position="after"] {
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--text);
     box-shadow: var(--canvas-selection-ring);
 }

@@ -96,7 +96,7 @@
 .feedSystemAvatar {
     width: 22px;
     height: 22px;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     display: grid;
     place-items: center;
     background: var(--bg-surface-2);
@@ -124,7 +124,7 @@
     color: var(--text-bright);
     background: var(--overlay-10);
     padding: var(--space-px) var(--space-3xs);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
 }
 
 .feedTime {
@@ -219,7 +219,7 @@
     align-items: center;
     gap: var(--space-3xs);
     padding: var(--space-4xs) var(--space-s);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     font-size: var(--text-2xs);
     font-weight: 600;
     letter-spacing: 0.04em;
@@ -326,7 +326,7 @@
 
 .mediaCell {
     aspect-ratio: 1;
-    border-radius: 6px;
+    border-radius: var(--radius);
     background: var(--bg-surface-3);
 }
 
@@ -353,7 +353,7 @@
     min-width: 0;
     padding: 0;
     gap: 0;
-    border-radius: 6px;
+    border-radius: var(--radius);
     overflow: hidden;
     background: var(--bg-surface);
     transition: transform 120ms ease;

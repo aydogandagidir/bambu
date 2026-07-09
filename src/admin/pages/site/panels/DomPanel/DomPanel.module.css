@@ -53,7 +53,7 @@
 .dragOverlayRow {
     width: min(240px, 70vw);
     background: var(--bg-surface);
-    border-radius: 12px;
+    border-radius: var(--panel-radius);
     box-shadow: 0 8px 24px var(--scrim-30);
     pointer-events: none;
 }

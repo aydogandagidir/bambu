@@ -18,10 +18,10 @@
     overflow: hidden;
     cursor: pointer;
     transition:
-        background-color 140ms ease,
-        border-color 140ms ease,
-        box-shadow 140ms ease,
-        transform 140ms ease;
+        background-color var(--duration) ease,
+        border-color var(--duration) ease,
+        box-shadow var(--duration) ease,
+        transform var(--duration) ease;
 }
 
 .colorInput:hover {
@@ -50,7 +50,7 @@
 .size-xs {
     width: 24px;
     height: 24px;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
 }
 
 .size-sm {

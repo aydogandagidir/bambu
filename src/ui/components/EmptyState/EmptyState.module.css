@@ -16,7 +16,7 @@
 .variant-card {
     gap: var(--space-m);
     padding: var(--space-xl);
-    border-radius: 12px;
+    border-radius: var(--panel-radius);
     background: var(--bg-surface);
 }
 

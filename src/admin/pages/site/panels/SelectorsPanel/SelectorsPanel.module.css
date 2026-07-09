@@ -136,7 +136,7 @@
     flex: 0 0 auto;
     align-items: center;
     border: 1px solid var(--overlay-10);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--overlay-5);
     color: var(--text-subtle);
     font-size: var(--text-3xs);
