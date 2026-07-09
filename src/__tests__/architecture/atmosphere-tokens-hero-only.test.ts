@@ -13,6 +13,7 @@
  * hero surfaces:
  *   - src/admin/AdminEntry.module.css                       (auth screen)
  *   - src/admin/layouts/AdminPageLayout/AdminPageLayout.module.css (page shell)
+ *   - src/admin/pages/dashboard/components/OnboardingPanel.module.css (first-run wizard bento)
  *
  * Any other admin/ui CSS module that reaches for `--auth-aurora-*`,
  * `--auth-vignette`, `--auth-card-*`, `--auth-bloom`, `--auth-sheen`,
@@ -36,6 +37,7 @@ const ATMOSPHERE_TOKEN_RE =
 const ALLOWLIST = new Set([
   'admin/AdminEntry.module.css',
   'admin/layouts/AdminPageLayout/AdminPageLayout.module.css',
+  'admin/pages/dashboard/components/OnboardingPanel.module.css',
 ])
 
 function collectModuleCss(dir: string): string[] {

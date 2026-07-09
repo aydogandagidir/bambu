@@ -3,10 +3,35 @@
    ========================================================================== */
 
 .bentoBox {
+    position: relative;
+    isolation: isolate;
     display: grid;
     grid-template-columns: 280px 1fr;
     gap: var(--space-2xl);
     width: 100%;
+}
+
+/* TIER-2 hero atmosphere: a soft aurora bloom behind the whole bento so the
+   first-run wizard reads as the lit centre of the dashboard. Background-only,
+   static, and never on the glass tiles themselves (the sky shows THROUGH their
+   frost, it does not dress them). The children sit above via isolation + z-index. */
+.bentoBox::before {
+    content: "";
+    position: absolute;
+    inset: calc(-1 * var(--space-6xl));
+    z-index: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(40% 60% at 12% 6%, var(--auth-aurora-brand), transparent 60%),
+        radial-gradient(46% 62% at 96% 96%, var(--auth-aurora-lilac), transparent 62%);
+    opacity: 0.7;
+    filter: blur(20px);
+}
+
+.bentoSidebar,
+.bentoGrid {
+    position: relative;
+    z-index: 1;
 }
 
 @media (max-width: 900px) {
@@ -157,11 +182,13 @@
     margin-bottom: var(--space-xl);
 }
 
+/* "Step 1" is content, not a disabled control — --text-disabled (2.5:1) is
+   reserved for disabled states. See docs/design.md → "Text tokens". */
 .stepIndex {
     font-size: var(--text-3xs);
     font-weight: 600;
     letter-spacing: 0.1em;
-    color: var(--text-disabled);
+    color: var(--text-subtle);
 }
 
 .stepIcon {

@@ -127,8 +127,9 @@ export function OnboardingPanel({ facts, onDismiss, onFrameworkImported }: Onboa
       {/* Left Sidebar: Progress */}
       <div className={styles.bentoSidebar}>
         <div className={styles.sidebarTop}>
-          <h2>Command Center</h2>
-          <p>System setup sequence</p>
+          <h2>Setup checklist</h2>
+          {/* Counted, not hardcoded — the sentence can't drift from STEPS. */}
+          <p>{total} steps to a site you can publish.</p>
         </div>
 
         <div className={styles.progressContainer}>
@@ -155,13 +156,13 @@ export function OnboardingPanel({ facts, onDismiss, onFrameworkImported }: Onboa
           </svg>
           <div className={styles.progressText}>
             <span className={styles.progressValue}>{percent}%</span>
-            <span className={styles.progressLabel}>ONLINE</span>
+            <span className={styles.progressLabel}>complete</span>
           </div>
         </div>
 
         <div className={styles.sidebarBottom}>
           <Button variant="ghost" size="sm" onClick={onDismiss} className={styles.dismissBtn}>
-            Dismiss Setup
+            Dismiss
           </Button>
         </div>
       </div>
@@ -175,7 +176,7 @@ export function OnboardingPanel({ facts, onDismiss, onFrameworkImported }: Onboa
           return (
             <div className={styles.stepCard} data-state={state} key={step.id}>
               <div className={styles.stepHeader}>
-                <span className={styles.stepIndex}>PHASE 0{i + 1}</span>
+                <span className={styles.stepIndex}>Step {i + 1}</span>
                 <span className={styles.stepIcon} aria-hidden="true">
                   {state === 'done' ? <CheckIcon size={14} /> : <StepIcon size={14} />}
                 </span>
