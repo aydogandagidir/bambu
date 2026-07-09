@@ -1,9 +1,16 @@
-/* Shared "auth screen" panel styles used by both the unauthenticated
-   pre-auth form (login / setup / MFA) and the authenticated "access
-   unavailable" notice. Pre-auth-only styles (brand row, form, field,
-   spinner) live in preauth/AdminPreAuthForm.module.css. */
+/* "Gece Penceresi" auth chrome — shared by the unauthenticated pre-auth form
+   (login / setup / MFA) and the authenticated "access unavailable" notice.
+
+   The page is a cinematic dark stage; a living aurora (rendered as markup by
+   AdminPreAuthForm) drifts behind a frosted-glass card. Form internals (brand
+   lockup, fields, toggle, trust) live in preauth/AdminPreAuthForm.module.css.
+
+   TIER-2 atmosphere: the aurora is background-only and never dresses a control.
+   Text contrast is measured against the SOLID --auth-card-surface floor, never
+   the moving sky. */
 
 .page {
+    position: relative;
     display: grid;
     min-height: 100vh;
     place-items: center;
@@ -11,31 +18,228 @@
     background: var(--bg-body);
     color: var(--text);
     font-family: var(--font-sans);
+    overflow: hidden;
 }
 
-/* Floating-panel recipe: the auth card is the first surface a user ever
-   sees — it advertises itself with the overlay border + panel shadow like
-   every other floating layer. */
+/* ── Aurora stage (rendered by AdminPreAuthForm, aria-hidden) ───────────── */
+.stage {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    overflow: hidden;
+    pointer-events: none;
+}
+
+.blob {
+    position: absolute;
+    width: 60vmax;
+    height: 60vmax;
+    border-radius: 50%;
+    filter: blur(80px);
+    will-change: transform, opacity;
+}
+
+.blobBrand {
+    top: -18vmax;
+    left: -12vmax;
+    background: radial-gradient(circle at center, var(--auth-aurora-brand), transparent 62%);
+    animation:
+        authDriftA 48s var(--ease) infinite,
+        authBreathe 120s ease-in-out infinite;
+}
+
+.blobLilac {
+    right: -14vmax;
+    bottom: -20vmax;
+    background: radial-gradient(circle at center, var(--auth-aurora-lilac), transparent 62%);
+    animation:
+        authDriftB 72s var(--ease) infinite,
+        authBreathe 120s ease-in-out infinite reverse;
+}
+
+.blobMint {
+    bottom: -8vmax;
+    left: 28vmax;
+    background: radial-gradient(circle at center, var(--auth-aurora-mint), transparent 62%);
+    animation: authDriftC 90s var(--ease) infinite;
+}
+
+@keyframes authDriftA {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+    33% {
+        transform: translate3d(10vmax, 6vmax, 0) scale(1.12);
+    }
+    66% {
+        transform: translate3d(4vmax, -6vmax, 0) scale(0.95);
+    }
+}
+
+@keyframes authDriftB {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+    40% {
+        transform: translate3d(-12vmax, -8vmax, 0) scale(1.1);
+    }
+    70% {
+        transform: translate3d(-4vmax, 4vmax, 0) scale(0.94);
+    }
+}
+
+@keyframes authDriftC {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+        transform: translate3d(-8vmax, -10vmax, 0) scale(1.18);
+    }
+}
+
+@keyframes authBreathe {
+    0%,
+    100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.vignette {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+    background: var(--auth-vignette);
+}
+
+/* ── Frosted-glass card (the "window") ─────────────────────────────────── */
 .panel {
-    width: min(100%, 360px);
-    padding: var(--space-5xl);
-    border: 1px solid var(--overlay-10);
-    border-radius: var(--card-radius);
-    background: var(--bg-surface);
-    box-shadow: var(--shadow-panel);
+    position: relative;
+    z-index: 2;
+    width: min(100%, 400px);
+    padding: var(--space-6xl) var(--space-5xl) var(--space-4xl);
+    /* Top-lit hairline border via double background-clip: the upper edge
+       catches light, the lower edge recedes. Falls back to a solid border on
+       engines that hairline-crack gradient borders at rounded corners. */
+    border: 1px solid var(--glass-border);
+    border-radius: var(--auth-card-radius);
+    background:
+        linear-gradient(var(--auth-card-surface), var(--auth-card-surface)) padding-box,
+        var(--hairline-lit) border-box;
+    background-color: var(--auth-card-surface);
+    backdrop-filter: var(--auth-card-blur);
+    -webkit-backdrop-filter: var(--auth-card-blur);
+    box-shadow: var(--shadow-premium), var(--shadow-specular-rim);
+    transition: box-shadow var(--duration-spring) var(--ease);
+    animation: authCardIn var(--duration-entrance) var(--ease-out) both;
 }
 
+@supports (border: 1px solid transparent) and (background-clip: border-box) {
+    .panel {
+        border-color: transparent;
+    }
+}
+
+/* Sky bloom behind the glass — the aurora glowing through the frost. Warms
+   toward the user on focus (brand only). */
+.panel::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: -1;
+    border-radius: inherit;
+    background: radial-gradient(120% 90% at 50% -10%, var(--auth-bloom), transparent 60%);
+    opacity: 0.9;
+    transition: opacity var(--duration-spring) var(--ease);
+}
+
+.panel:focus-within::before {
+    opacity: 1.5;
+}
+
+/* Success seal — brand light traces the card border once on sign-in. */
+.panel::after {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    z-index: 3;
+    padding: var(--space-px);
+    border-radius: inherit;
+    background: var(--auth-seal-trace) border-box;
+    -webkit-mask:
+        linear-gradient(var(--scrim) 0 0) content-box,
+        linear-gradient(var(--scrim) 0 0);
+    -webkit-mask-composite: xor;
+    mask:
+        linear-gradient(var(--scrim) 0 0) content-box,
+        linear-gradient(var(--scrim) 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    pointer-events: none;
+}
+
+.panel[data-sealing="true"]::after {
+    animation: authSeal var(--duration-entrance) var(--ease-out) forwards;
+}
+
+@keyframes authSeal {
+    0% {
+        opacity: 0;
+        clip-path: inset(0 100% 0 0);
+    }
+    15% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0;
+        clip-path: inset(0 0 0 0);
+    }
+}
+
+@keyframes authCardIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px) scale(0.99);
+        filter: blur(4px);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+        filter: none;
+    }
+}
+
+/* Gradient headline — the title itself catches the sky. */
 .title {
-    margin: 0 0 var(--space-3xl);
-    color: var(--text-bright);
-    font-size: var(--text-3xl);
+    margin: 0;
+    font-size: var(--text-5xl);
     font-weight: var(--weight-semibold);
-    letter-spacing: 0;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    background: var(--text-gradient-premium);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    text-wrap: balance;
 }
 
 .error {
+    display: flex;
+    align-items: center;
+    gap: var(--space-s);
+    min-height: 1.4em;
     margin: 0;
     color: var(--danger-lighter);
     font-size: var(--text-s);
-    line-height: 1.45;
+    line-height: 1.4;
+}
+
+.errorIcon {
+    flex: 0 0 auto;
 }
