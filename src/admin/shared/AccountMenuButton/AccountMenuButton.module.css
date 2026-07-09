@@ -14,7 +14,7 @@
     background: var(--bg-surface-2);
     color: var(--text);
     font-size: var(--text-xs);
-    font-weight: 750;
+    font-weight: var(--weight-bold);
     line-height: 1;
     display: inline-flex;
     align-items: center;
@@ -22,9 +22,11 @@
     cursor: pointer;
     user-select: none;
     overflow: hidden;
+    /* Lit-chip rim so the avatar pill matches the rest of the toolbar */
+    box-shadow: var(--shadow-specular-rim);
     transition:
-        background-color 120ms ease,
-        border-color 120ms ease;
+        background-color var(--duration-fast) var(--ease),
+        border-color var(--duration-fast) var(--ease);
 }
 
 /* The avatar nested inside the trigger already paints its own circle. Hide
@@ -111,7 +113,8 @@
 
 .headerName {
     font-size: var(--text-xs);
-    font-weight: 700;
+    /* tokenize raw 700 to the --weight-* scale */
+    font-weight: var(--weight-bold);
     color: var(--text);
     white-space: nowrap;
     overflow: hidden;
@@ -120,7 +123,8 @@
 
 .headerEmail {
     font-size: var(--text-xs);
-    font-weight: 500;
+    /* tokenize raw 500 to the --weight-* scale */
+    font-weight: var(--weight-medium);
     color: var(--text-subtle);
     white-space: nowrap;
     overflow: hidden;
@@ -144,7 +148,8 @@
     border: 1px solid var(--border);
     color: var(--text-muted);
     font-size: var(--text-2xs);
-    font-weight: 700;
+    /* tokenize raw 700 to the --weight-* scale */
+    font-weight: var(--weight-bold);
     letter-spacing: 0.02em;
     text-transform: uppercase;
 }

@@ -9,6 +9,8 @@
     background: transparent;
     border: 1px solid var(--overlay-20);
     border-radius: var(--input-radius);
+    /* Bloom the focus ring/border in over ~140ms instead of snapping. */
+    transition: border-color var(--duration) var(--ease), box-shadow var(--duration) var(--ease), background-color var(--duration) var(--ease);
 }
 
 .searchBar:hover {

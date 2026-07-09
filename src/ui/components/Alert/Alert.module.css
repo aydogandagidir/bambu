@@ -26,14 +26,34 @@
     border-color: var(--border);
 }
 
+/* State variants: tonal fill + lit left edge give the alert a stronger presence than a lone recolored border. */
 .alertSuccess {
+    background: var(--success-10);
     border-color: var(--success-30);
+    box-shadow: inset 2px 0 0 var(--success);
 }
 
 .alertWarning {
-    border-color: var(--warning);
+    background: var(--warning-10);
+    border-color: var(--warning-30);
+    box-shadow: inset 2px 0 0 var(--warning);
 }
 
 .alertDanger {
-    border-color: var(--danger);
+    background: var(--danger-10);
+    border-color: var(--danger-30);
+    box-shadow: inset 2px 0 0 var(--danger);
+}
+
+/* Variant titles carry the state-text token so the heading reads as the alert's tone. */
+.alertSuccess .alertTitle {
+    color: var(--success-text);
+}
+
+.alertWarning .alertTitle {
+    color: var(--warning-text);
+}
+
+.alertDanger .alertTitle {
+    color: var(--danger-text);
 }

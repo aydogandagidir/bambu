@@ -14,6 +14,8 @@
     user-select: none;
     background: var(--bg-surface);
     border-right: 1px solid var(--border-muted);
+    /* Top-lit rim (Tier-1 light law) so the section rail catches light on its top edge. */
+    box-shadow: var(--shadow-specular-rim);
     transition: width var(--duration-slow) var(--ease);
     overflow: hidden;
 }
@@ -85,9 +87,12 @@
     padding: var(--space-2xs) var(--space-s);
     margin-top: var(--space-xl);
     margin-bottom: var(--space-4xs);
+    /* Premium eyebrow: small-caps nav label reads as a section marker, not body text */
     color: var(--text-muted);
-    font-size: var(--text-s);
-    font-weight: var(--weight-medium);
+    font-size: var(--text-2xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: var(--weight-semibold);
     user-select: none;
 }
 
@@ -148,8 +153,8 @@
 }
 
 .adminLink svg {
+    /* No fractional scale — it fuzzes the pixel-art grid; size via NAV_ICON_SIZE instead. */
     opacity: 0.8;
-    transform: scale(0.85);
     transition:
         opacity var(--duration-fast) var(--ease),
         color var(--duration-fast) var(--ease);
@@ -192,8 +197,8 @@
 }
 
 .activeSection svg {
+    /* No fractional scale — it fuzzes the pixel-art grid; size via NAV_ICON_SIZE instead. */
     opacity: 1;
-    transform: scale(0.85);
     color: var(--brand);
 }
 

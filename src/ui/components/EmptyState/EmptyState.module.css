@@ -93,13 +93,23 @@
     padding: var(--space-7xl) var(--space-3xl);
 }
 
+/* Focal tile: seat the large glyph in a lit, rounded container so it reads as
+ * the anchor of the empty state rather than a bare floating icon. */
 .size-large .icon {
+    padding: var(--space-l);
+    border-radius: var(--card-radius);
+    background: var(--bg-surface-2);
+    box-shadow: var(--shadow-specular-rim);
     color: var(--text-muted);
 }
 
 .size-large .title {
     max-width: 280px;
-    color: var(--text);
+    /* Gradient headline lifts the primary label above the flat body text. */
+    background: var(--text-gradient-premium);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
     font-size: var(--text-xl);
     font-weight: 700;
     line-height: 1.45;

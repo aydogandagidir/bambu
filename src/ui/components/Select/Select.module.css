@@ -12,6 +12,8 @@
     color: var(--text);
     cursor: pointer;
     font-family: var(--font-sans);
+    /* Bloom the focus ring/border in over ~140ms instead of snapping. */
+    transition: border-color var(--duration) var(--ease), box-shadow var(--duration) var(--ease), background-color var(--duration) var(--ease);
 }
 
 .select:hover {

@@ -4,6 +4,8 @@
     padding: var(--space-xl);
     border-radius: 16px;
     background: var(--bg-surface-2);
+    /* Top-lit rim so the flat tile catches the overhead light. */
+    box-shadow: var(--shadow-specular-rim);
     transition: background 0.3s;
 }
 

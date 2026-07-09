@@ -75,7 +75,19 @@
     align-items: end;
     gap: var(--space-3xl);
     padding-bottom: var(--space-5xl);
-    border-bottom: 1px solid var(--overlay-10);
+    border-bottom: none;
+    position: relative;
+}
+
+/* Directional light-law seam: brightest under the gradient title, fading toward the actions. */
+.header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--overlay-20), transparent);
 }
 
 .titleGroup {

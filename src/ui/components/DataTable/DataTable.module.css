@@ -21,6 +21,8 @@
     font-weight: 700;
     line-height: 1.2;
     text-align: left;
+    /* Lit seam under the header separates it from rows with a top-lit hairline */
+    border-bottom: 1px solid var(--overlay-10);
 }
 
 .cell {
@@ -30,7 +32,7 @@
     font-size: var(--text-s);
     line-height: 1.45;
     vertical-align: middle;
-    transition: background-color 120ms ease;
+    transition: background-color var(--duration) var(--ease), box-shadow var(--duration) var(--ease);
 }
 
 .compactTable .headerCell {
@@ -56,5 +58,7 @@
 }
 
 .row:hover .cell {
+    /* Hovered row reads as a lifted lit surface with a specular rim */
     background: var(--bg-surface-3);
+    box-shadow: var(--shadow-specular-rim);
 }
