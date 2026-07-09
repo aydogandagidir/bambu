@@ -156,20 +156,26 @@ export function DashboardPage() {
   // pass. Keeping them off the first render trims ~250 ms from the React
   // commit + layout / paint cycle on cold load.
   //
-  // We flip `mounted` in a `useEffect` (which fires after first paint)
-  // gated by `requestAnimationFrame` so the post-paint render lands on
-  // the very next frame. The fallback `setTimeout(0)` covers browsers
-  // without `rAF` (none of the targets in 2026 — the fallback only fires
-  // in tests / SSR).
+  // We flip `mounted` in a `useEffect` (which fires after first paint) so the
+  // heavy children land one render later. `requestAnimationFrame` is the fast
+  // path — the very next frame — but it must NOT be the only path: during a
+  // cold boot (and under StrictMode's mount → unmount → remount, which cancels
+  // the first rAF) the remount's rAF can be starved and never fire, stranding
+  // `mounted` at false forever — and with it the onboarding wizard, which a new
+  // owner would then never see on first load. A `setTimeout` is the reliable
+  // floor that always fires; whichever lands first wins (setMounted is
+  // idempotent).
   const [mounted, setMounted] = useState(false)
   useEffect(() => {
-    const w = window as unknown as { requestAnimationFrame?: (cb: () => void) => number }
-    if (typeof w.requestAnimationFrame === 'function') {
-      const handle = w.requestAnimationFrame(() => setMounted(true))
-      return () => cancelAnimationFrame(handle)
+    const raf =
+      typeof requestAnimationFrame === 'function'
+        ? requestAnimationFrame(() => setMounted(true))
+        : 0
+    const timer = setTimeout(() => setMounted(true), 100)
+    return () => {
+      if (raf) cancelAnimationFrame(raf)
+      clearTimeout(timer)
     }
-    const id = setTimeout(() => setMounted(true), 0)
-    return () => clearTimeout(id)
   }, [])
 
 
