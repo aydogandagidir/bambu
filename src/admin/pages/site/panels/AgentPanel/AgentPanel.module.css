@@ -13,15 +13,23 @@
   height: 480px;
   display: flex;
   flex-direction: column;
-  background: var(--bg-surface);
   backdrop-filter: blur(var(--panel-blur));
+  /* Tier-1 light law: top-lit hairline + specular rim */
   border: 1px solid var(--overlay-10);
   border-radius: 12px;
-  box-shadow: var(--shadow-panel);
+  background:
+    linear-gradient(var(--bg-surface), var(--bg-surface)) padding-box,
+    var(--hairline-lit) border-box;
+  background-color: var(--bg-surface);
+  box-shadow: var(--shadow-panel), var(--shadow-specular-rim);
   overflow: hidden;
   outline: none;
   will-change: transform;
   transform: translateZ(0);
+}
+
+@supports (background-clip: border-box) {
+  .floatPanel { border-color: transparent; }
 }
 
 .floatPanelDocked {

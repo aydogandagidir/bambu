@@ -54,13 +54,21 @@
     width: var(--spotlight-width);
     max-width: calc(100vw - 32px);
     max-height: min(60vh, 560px);
-    background: var(--bg-surface);
+    /* Tier-1 light law: top-lit hairline + specular rim */
     border: 1px solid var(--overlay-10);
+    background:
+        linear-gradient(var(--bg-surface), var(--bg-surface)) padding-box,
+        var(--hairline-lit) border-box;
+    background-color: var(--bg-surface);
     border-radius: var(--panel-radius);
-    box-shadow: var(--shadow-panel);
+    box-shadow: var(--shadow-panel), var(--shadow-specular-rim);
     display: flex;
     flex-direction: column;
     overflow: hidden;
+}
+
+@supports (background-clip: border-box) {
+    .panel { border-color: transparent; }
 }
 
 .panel[data-state="open"] {

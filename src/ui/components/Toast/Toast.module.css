@@ -34,7 +34,10 @@
     background: var(--bg-surface);
     border: 1px solid var(--overlay-10);
     border-radius: var(--panel-radius);
-    box-shadow: var(--shadow-panel);
+    /* Tier-1 specular rim only — Toast keeps its solid border for the
+       per-kind coloured left edge (.kind-*), so the hairline-lit gradient
+       border is deliberately not used here. */
+    box-shadow: var(--shadow-panel), var(--shadow-specular-rim);
     backdrop-filter: blur(var(--panel-blur));
     color: var(--text);
     font-size: var(--text-s);

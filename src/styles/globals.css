@@ -349,6 +349,7 @@
        contrast is unaffected. */
     --admin-aurora-a: rgba(56, 189, 248, 0.14);
     --admin-aurora-b: rgba(200, 182, 255, 0.12);
+    --admin-aurora-c: rgba(142, 230, 200, 0.08);
 
     /* ── "Gece Penceresi" — the auth / hero atmosphere ─────────────────────
        Two tiers, deliberately separated (see docs/design.md → "Light and

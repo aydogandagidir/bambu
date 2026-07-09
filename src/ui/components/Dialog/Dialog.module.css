@@ -18,12 +18,25 @@
     max-height: 80vh;
     display: grid;
     grid-template-rows: auto 1fr auto;
+    /* Tier-1 light law: a top-lit hairline border via double background-clip
+       (upper edge catches light, lower edge recedes) + a specular top rim, so
+       every modal reads as lit from one source above. The solid border is the
+       fallback where gradient borders hairline-crack at rounded corners. */
     border: 1px solid var(--overlay-10);
     border-radius: var(--panel-radius);
-    background: var(--bg-surface);
-    box-shadow: var(--shadow-panel);
+    background:
+        linear-gradient(var(--bg-surface), var(--bg-surface)) padding-box,
+        var(--hairline-lit) border-box;
+    background-color: var(--bg-surface);
+    box-shadow: var(--shadow-panel), var(--shadow-specular-rim);
     color: var(--text);
     overflow: hidden;
+}
+
+@supports (background-clip: border-box) {
+    .dialog {
+        border-color: transparent;
+    }
 }
 
 .dialog[data-size="sm"] {
