@@ -12,8 +12,8 @@
     flex-shrink: 0;
     opacity: 1;
     transition:
-        opacity 140ms ease,
-        filter 140ms ease;
+        opacity var(--duration) ease,
+        filter var(--duration) ease;
     /* Isolate each frame as its own layout + paint containment box so paint
        invalidation and (implicit) compositing don't propagate across frames or
        into the editor chrome — reduces the oversized-layer pressure behind the

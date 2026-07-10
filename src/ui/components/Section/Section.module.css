@@ -27,7 +27,7 @@
     cursor: pointer;
     color: var(--text-muted);
     background: var(--overlay-10);
-    border-radius: 12px;
+    border-radius: var(--panel-radius);
     font-family: inherit;
     text-align: left;
 }

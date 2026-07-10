@@ -31,10 +31,16 @@ function rootBlock(css: string): string {
   return match[1]
 }
 
-/** Custom-property values never contain `;`, so a semicolon always terminates one. */
+/**
+ * Custom-property values never contain `;`, so a semicolon always terminates
+ * one. Comments are stripped first: a `/* --input-radius: 1em *\/` mention
+ * inside a comment would otherwise parse as a second, bogus declaration and
+ * clobber the real token.
+ */
 function parseDeclarations(block: string): Map<string, string> {
+  const withoutComments = block.replace(/\/\*[\s\S]*?\*\//g, '')
   const declarations = new Map<string, string>()
-  for (const [, name, value] of block.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
+  for (const [, name, value] of withoutComments.matchAll(/(--[\w-]+)\s*:\s*([^;]+);/g)) {
     declarations.set(name, value.replace(/\s+/g, ' ').trim())
   }
   return declarations

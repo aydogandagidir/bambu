@@ -9,7 +9,7 @@
     width: 28px;
     height: 28px;
     padding: 0;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     border: 1px solid var(--border);
     background: var(--bg-surface-2);
     color: var(--text);
@@ -139,7 +139,7 @@
     align-items: center;
     height: 16px;
     padding: 0 var(--space-xs);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--bg-surface-2);
     border: 1px solid var(--border);
     color: var(--text-muted);

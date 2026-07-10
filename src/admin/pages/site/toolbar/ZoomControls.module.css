@@ -8,7 +8,7 @@
     gap: var(--space-4xs);
     background: var(--bg-surface-2);
     border: 1px solid var(--border);
-    border-radius: 9999px; /* pill shape */
+    border-radius: var(--radius-pill); /* pill shape */
     padding: var(--space-2xs);
     box-shadow: var(--shadow-tooltip);
     z-index: 50; /* Above canvas, below modals */

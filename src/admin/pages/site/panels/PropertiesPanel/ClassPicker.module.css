@@ -45,7 +45,7 @@
 .utilityBadge {
     flex: 0 0 auto;
     padding: var(--space-4xs) var(--space-2xs);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--bg-surface-5);
     color: var(--text);
     font-size: var(--text-3xs);

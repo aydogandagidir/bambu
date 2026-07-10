@@ -59,8 +59,8 @@
     color: var(--rail-icon-color);
     filter: drop-shadow(0 0 5px var(--rail-icon-glow));
     transition:
-        color 140ms ease,
-        filter 140ms ease;
+        color var(--duration) ease,
+        filter var(--duration) ease;
 }
 
 .activeIndicator {
@@ -73,8 +73,8 @@
     opacity: 0;
     transform: scaleY(0.6);
     transition:
-        opacity 140ms ease,
-        transform 140ms ease;
+        opacity var(--duration) ease,
+        transform var(--duration) ease;
 }
 
 .railButton[aria-pressed="true"] .activeIndicator {

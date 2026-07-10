@@ -46,7 +46,7 @@
     text-align: center;
     color: var(--text-subtle);
     background: var(--bg-surface-2);
-    border-radius: 16px;
+    border-radius: var(--card-radius);
 }
 
 .credentialGrid {
@@ -54,7 +54,7 @@
     grid-template-columns: 1fr;
     gap: var(--space-px);
     background: var(--bg-surface);
-    border-radius: 16px;
+    border-radius: var(--card-radius);
     overflow: hidden;
 }
 
@@ -154,7 +154,7 @@
     gap: var(--space-l);
     padding: var(--space-2xl);
     background: var(--bg-surface-2);
-    border-radius: 16px;
+    border-radius: var(--card-radius);
 }
 
 .defaultScopeLabel {
@@ -237,7 +237,7 @@
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: var(--space-px);
     background: var(--bg-surface);
-    border-radius: 16px;
+    border-radius: var(--card-radius);
     overflow: hidden;
 }
 
@@ -283,7 +283,7 @@
 
 .auditPanel {
     background: var(--bg-surface-2);
-    border-radius: 16px;
+    border-radius: var(--card-radius);
     padding: var(--space-2xl);
     display: grid;
     gap: var(--space-l);
@@ -375,7 +375,7 @@
 
 .auditDayBar {
     height: 6px;
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
     background: var(--bg-surface);
     overflow: hidden;
 }
@@ -384,7 +384,7 @@
     height: 100%;
     width: var(--day-bar-pct);
     background: var(--accent-1);
-    border-radius: 3px;
+    border-radius: var(--radius-sm);
 }
 
 .auditDayCost {

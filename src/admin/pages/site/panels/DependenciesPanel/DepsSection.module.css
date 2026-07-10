@@ -50,7 +50,7 @@
     margin-bottom: var(--space-xs);
     padding: var(--space-xs);
     border: 1px solid color-mix(in srgb, var(--warning) 22%, transparent);
-    border-radius: 6px;
+    border-radius: var(--radius);
     background: color-mix(in srgb, var(--warning) 8%, transparent);
 }
 
@@ -206,7 +206,7 @@
     flex-shrink: 0;
     padding: var(--space-px) var(--space-2xs);
     border: 1px solid color-mix(in srgb, var(--info-text) 22%, transparent);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: color-mix(in srgb, var(--info-text) 12%, transparent);
     color: var(--info-text);
     font-size: var(--text-3xs);
