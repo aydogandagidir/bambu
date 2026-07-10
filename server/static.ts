@@ -340,7 +340,7 @@ const LOGIN_SKELETON_HTML = `<div class="login-skeleton" data-initial-login-skel
       </label>
       <button class="login-skeleton__submit" type="submit">Sign in</button>
     </form>
-    <p class="login-skeleton__trust">Your connection is end-to-end encrypted.</p>
+    <p class="login-skeleton__trust">Your own isolated instance — never a shared database.</p>
   </div>
 </div>`
 

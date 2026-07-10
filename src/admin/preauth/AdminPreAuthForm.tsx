@@ -311,9 +311,13 @@ export function AdminPreAuthForm({
             </Button>
           </form>
 
+          {/* Instatic is single-tenant by design, whether self-hosted or run as a
+              managed per-customer container. Isolation is the one trust claim that
+              holds in every deployment — unlike a transport-security claim, which the
+              app cannot verify (TLS may terminate at a proxy, or be absent entirely). */}
           <p className={styles.trust}>
             <LockSolidIcon size={12} aria-hidden="true" />
-            <span>Your connection is end-to-end encrypted.</span>
+            <span>Your own isolated instance — never a shared database.</span>
           </p>
         </div>
       </section>
