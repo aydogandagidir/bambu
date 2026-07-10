@@ -28,7 +28,7 @@ test.describe('keyboard access', () => {
 
   test('logs in with the keyboard only (A11Y-001)', async ({ page }) => {
     await page.goto('/admin')
-    await expect(page.getByRole('heading', { name: 'Admin Login' })).toBeVisible()
+    await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
 
     const email = page.getByLabel('Email')
     await email.focus()
@@ -37,7 +37,7 @@ test.describe('keyboard access', () => {
 
     // Tab advances to the password field (focus order), then Enter submits.
     await page.keyboard.press('Tab')
-    await expect(page.getByLabel('Password')).toBeFocused()
+    await expect(page.getByLabel('Password', { exact: true })).toBeFocused()
     await page.keyboard.type(OWNER.password)
     await page.keyboard.press('Enter')
 

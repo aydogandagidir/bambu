@@ -118,7 +118,7 @@ test.describe('users and roles', () => {
         await expect(userRow(page, editedEmail)).toHaveCount(0)
 
         await activeAdmin.goto('/admin/dashboard')
-        await expect(activeAdmin.getByRole('heading', { name: 'Admin Login' })).toBeVisible()
+        await expect(activeAdmin.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
       })
 
       const deletedContext = await browser.newContext()
@@ -553,12 +553,12 @@ async function expectLoginRejected(
   password: string,
 ): Promise<void> {
   await page.goto('/admin')
-  await expect(page.getByRole('heading', { name: 'Admin Login' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
   await page.getByLabel('Email').fill(email)
-  await page.getByLabel('Password').fill(password)
-  await page.getByRole('button', { name: 'Sign In' }).click()
+  await page.getByLabel('Password', { exact: true }).fill(password)
+  await page.getByRole('button', { name: 'Sign in' }).click()
   await expect(page.getByRole('alert')).toHaveText('Invalid email or password')
-  await expect(page.getByRole('heading', { name: 'Admin Login' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
 }
 
 function escapeRegExp(value: string): string {
