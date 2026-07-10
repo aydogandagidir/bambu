@@ -5,6 +5,7 @@ import {
   OWNER,
   completeStepUp,
   expectLoggedIn,
+  expectSignInScreen,
   login,
   loginAs,
   logout,
@@ -137,8 +138,8 @@ async function submitLoginAttempt(
   password: string,
 ): Promise<void> {
   await page.getByLabel('Email').fill(email)
-  await page.getByLabel('Password').fill(password)
-  await page.getByRole('button', { name: 'Sign In' }).click()
+  await page.getByLabel('Password', { exact: true }).fill(password)
+  await page.getByRole('button', { name: 'Sign in' }).click()
 }
 
 async function clearUploadedAvatarIfPresent(page: Page): Promise<void> {
@@ -429,15 +430,15 @@ test.describe('account', () => {
       page,
     }) => {
       await page.goto('/admin')
-      await expect(page.getByRole('heading', { name: 'Admin Login' })).toBeVisible()
+      await expectSignInScreen(page)
 
       await page.getByLabel('Email').fill(OWNER.email)
-      await page.getByLabel('Password').fill(`${OWNER.password}-wrong`)
-      await page.getByRole('button', { name: 'Sign In' }).click()
+      await page.getByLabel('Password', { exact: true }).fill(`${OWNER.password}-wrong`)
+      await page.getByRole('button', { name: 'Sign in' }).click()
       await expect(page.getByRole('alert')).toHaveText(/invalid email or password/i)
 
-      await page.getByLabel('Password').fill(OWNER.password)
-      await page.getByRole('button', { name: 'Sign In' }).click()
+      await page.getByLabel('Password', { exact: true }).fill(OWNER.password)
+      await page.getByRole('button', { name: 'Sign in' }).click()
       await expectLoggedIn(page)
 
       await page.goto('/admin/account')
@@ -482,7 +483,7 @@ test.describe('account', () => {
 
         const attackerPage = await attackerContext.newPage()
         await attackerPage.goto('/admin')
-        await expect(attackerPage.getByRole('heading', { name: 'Admin Login' })).toBeVisible()
+        await expectSignInScreen(attackerPage)
 
         for (let attempt = 1; attempt <= 4; attempt += 1) {
           await submitLoginAttempt(
@@ -562,7 +563,7 @@ test.describe('account', () => {
         await expectLoggedIn(page)
 
         await otherPage.goto('/admin/account')
-        await expect(otherPage.getByRole('heading', { name: 'Admin Login' })).toBeVisible()
+        await expectSignInScreen(otherPage)
       } finally {
         await otherContext.close()
       }
@@ -696,8 +697,8 @@ test.describe('account', () => {
 
       await logout(page)
       await page.getByLabel('Email').fill(OWNER.email)
-      await page.getByLabel('Password').fill(OWNER.password)
-      await page.getByRole('button', { name: 'Sign In' }).click()
+      await page.getByLabel('Password', { exact: true }).fill(OWNER.password)
+      await page.getByRole('button', { name: 'Sign in' }).click()
       await expect(
         page.getByRole('heading', { name: 'Two-Factor Authentication' }),
       ).toBeVisible()
@@ -758,8 +759,8 @@ test.describe('account', () => {
 
       await logout(page)
       await page.getByLabel('Email').fill(OWNER.email)
-      await page.getByLabel('Password').fill(OWNER.password)
-      await page.getByRole('button', { name: 'Sign In' }).click()
+      await page.getByLabel('Password', { exact: true }).fill(OWNER.password)
+      await page.getByRole('button', { name: 'Sign in' }).click()
       await expect(
         page.getByRole('heading', { name: 'Two-Factor Authentication' }),
       ).toBeVisible()
@@ -814,8 +815,8 @@ test.describe('account', () => {
       await logout(page)
       await page.setViewportSize({ width: 390, height: 844 })
       await page.getByLabel('Email').fill(OWNER.email)
-      await page.getByLabel('Password').fill(OWNER.password)
-      await page.getByRole('button', { name: 'Sign In' }).click()
+      await page.getByLabel('Password', { exact: true }).fill(OWNER.password)
+      await page.getByRole('button', { name: 'Sign in' }).click()
 
       await expect(
         page.getByRole('heading', { name: 'Two-Factor Authentication' }),
@@ -855,8 +856,8 @@ test.describe('account', () => {
 
       await logout(page)
       await page.getByLabel('Email').fill(OWNER.email)
-      await page.getByLabel('Password').fill(OWNER.password)
-      await page.getByRole('button', { name: 'Sign In' }).click()
+      await page.getByLabel('Password', { exact: true }).fill(OWNER.password)
+      await page.getByRole('button', { name: 'Sign in' }).click()
       await expect(
         page.getByRole('heading', { name: 'Two-Factor Authentication' }),
       ).toBeVisible()
@@ -873,8 +874,8 @@ test.describe('account', () => {
 
       await logout(page)
       await page.getByLabel('Email').fill(OWNER.email)
-      await page.getByLabel('Password').fill(OWNER.password)
-      await page.getByRole('button', { name: 'Sign In' }).click()
+      await page.getByLabel('Password', { exact: true }).fill(OWNER.password)
+      await page.getByRole('button', { name: 'Sign in' }).click()
       await expect(
         page.getByRole('heading', { name: 'Two-Factor Authentication' }),
       ).toBeVisible()
@@ -962,12 +963,12 @@ test.describe('account', () => {
 
       await logout(page)
       await page.getByLabel('Email').fill(OWNER.email)
-      await page.getByLabel('Password').fill(OWNER.password)
-      await page.getByRole('button', { name: 'Sign In' }).click()
+      await page.getByLabel('Password', { exact: true }).fill(OWNER.password)
+      await page.getByRole('button', { name: 'Sign in' }).click()
       await expect(page.getByRole('alert')).toHaveText(/invalid email or password/i)
 
-      await page.getByLabel('Password').fill(temporaryPassword)
-      await page.getByRole('button', { name: 'Sign In' }).click()
+      await page.getByLabel('Password', { exact: true }).fill(temporaryPassword)
+      await page.getByRole('button', { name: 'Sign in' }).click()
       await expectLoggedIn(page)
 
       await page.goto('/admin/account')

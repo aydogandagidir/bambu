@@ -157,11 +157,13 @@
     margin-bottom: var(--space-xl);
 }
 
+/* "Step 1" is content, not a disabled control — `--text-disabled` (2.5:1) is
+   reserved for disabled states. See docs/design.md → "Text tokens". */
 .stepIndex {
     font-size: var(--text-3xs);
     font-weight: 600;
     letter-spacing: 0.1em;
-    color: var(--text-disabled);
+    color: var(--text-subtle);
 }
 
 .stepIcon {
