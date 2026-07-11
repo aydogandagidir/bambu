@@ -227,6 +227,9 @@
     --panel-radius: 12px;
     --input-radius: 1em;
     --tooltip-radius: 6px;
+    /* Fully-round pill. Height-independent (unlike --input-radius: 1em), so it
+       reads as a capsule at any control height. */
+    --radius-pill: 999px;
 
     /* Scrollbars */
     --scrollbar-size: 6px;

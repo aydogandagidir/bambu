@@ -10,7 +10,7 @@
     grid-template-columns: auto minmax(0, 1fr) auto;
     align-items: center;
     gap: var(--space-s);
-    border-radius: 12px;
+    border-radius: var(--panel-radius);
     background: var(--bg-surface);
     color: var(--text);
     font: inherit;

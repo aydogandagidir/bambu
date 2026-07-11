@@ -153,7 +153,7 @@
     position: absolute;
     inset: -1px;
     z-index: -1;
-    border-radius: inherit;
+    border-radius: var(--auth-card-radius);
     background: radial-gradient(120% 90% at 50% -10%, var(--auth-bloom), transparent 60%);
     opacity: 0.9;
     transition: opacity var(--duration-spring) var(--ease);
@@ -170,7 +170,7 @@
     inset: -1px;
     z-index: 3;
     padding: var(--space-px);
-    border-radius: inherit;
+    border-radius: var(--auth-card-radius);
     background: var(--auth-seal-trace) border-box;
     -webkit-mask:
         linear-gradient(var(--scrim) 0 0) content-box,

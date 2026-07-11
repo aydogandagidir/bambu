@@ -10,7 +10,7 @@
     /* Tier-1 light law: a top-lit hairline edge + specular rim so every menu
        catches light on its upper edge as it drops in. */
     border: 1px solid transparent;
-    border-radius: 16px;
+    border-radius: var(--card-radius);
     background:
         linear-gradient(var(--bg-surface-3), var(--bg-surface-3)) padding-box,
         var(--hairline-lit) border-box;
@@ -108,7 +108,7 @@
     min-height: 28px;
     padding: 0 var(--space-m);
     gap: var(--space-m);
-    border-radius: 12px;
+    border-radius: var(--panel-radius);
     font-size: var(--text-s);
     font-weight: 560;
     color: var(--text);

@@ -109,7 +109,7 @@
     /* Overlay (additive) rather than a surface tone so the base marker stays
        visible when the Home card lifts its background on hover. */
     background: var(--overlay-10);
-    border-radius: 12px;
+    border-radius: var(--panel-radius);
 }
 
 /* Bar grid — one column per step, equal-width, anchored to the
@@ -142,7 +142,7 @@
 
 .barChartBar {
     width: 100%;
-    border-radius: 12px;
+    border-radius: var(--panel-radius);
 }
 
 .barChartBarMax {

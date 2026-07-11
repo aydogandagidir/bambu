@@ -256,8 +256,11 @@ These are admin tokens. The published-site Framework engine also emits short spa
 | `--card-radius`      | 16px  | Tile cards (Widget, dashboard cells, module inserter tiles)  |
 | `--input-radius`     | 1em   | Pill-shaped inputs, classes / property chips                 |
 | `--tooltip-radius`   | 6px   | Tooltips                                                     |
+| `--radius-pill`      | 999px | Fully-round pills whose height varies (badges, toggles, dots-as-capsules) — height-independent, unlike `--input-radius: 1em` |
 
-Do not introduce ad-hoc radius values. Tile-card surfaces use `--card-radius`.
+Do not introduce ad-hoc radius values. Tile-card surfaces use `--card-radius`. Circles use `50%`; a zero corner is `0`.
+
+Raw `border-radius` in `src/admin/` and `src/ui/` CSS modules is gated by `radius-motion-token-policy.test.ts` — `var(…)`, `calc(…)`, `0`, and `%` are always allowed, everything else must be a token. The gate carries a frozen baseline of the off-scale radii (7px, 9px, 10px, …) that predate it; those numbers only ever shrink, and new code adds none.
 
 ### Scrollbar chrome
 
@@ -635,7 +638,8 @@ The HTML `title` attribute is banned for hover hints — gated by `no-native-tit
 | Card with a colored border                               | Borderless tile on a darker parent (1px gap pattern); glass hero tiles use `--glass-border` only |
 | Hover that recolors a flat card's border                 | Hover that lifts the surface tone (`-surface-2` → `-3`); only glass hero tiles may warm the border via `--glass-border-hover` |
 | Raw `font-weight: 560/620/650`                           | The four `--weight-*` tokens                             |
-| Ad-hoc `transition: ... 0.1s ease`                       | `var(--duration-fast/-/slow)` + `var(--ease)` / `var(--ease-out)` |
+| Ad-hoc `transition: ... 0.1s ease` (gated)               | `var(--duration-fast/-/slow)` + `var(--ease)` / `var(--ease-out)`. `radius-motion-token-policy.test.ts` gates raw `transition` durations against a frozen baseline; `animation` loop periods and reduced-motion sentinels are exempt |
+| Raw `border-radius: 8px` (gated)                         | A radius token (`--radius-sm` … `--card-radius`, `--radius-pill`); `var()` / `calc()` / `0` / `%` are exempt |
 | A second chromatic accent for actions                    | `--brand-*` is the only interactive accent — demote the rest |
 | Filling an input with a tinted background                | Transparent fill, white-alpha border                     |
 | Inventing a one-off color for a category                 | Use `assignRailAccents` / `railAccent` from `@ui/railAccent`, or add a new tint token in `globals.css`|

@@ -10,7 +10,7 @@
     --avatar-size: 96px;
     width: var(--avatar-size);
     height: var(--avatar-size);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     border: 1px solid var(--border);
     background: var(--bg-surface-2);
     color: var(--text-bright);

@@ -279,7 +279,7 @@
   padding: var(--space-xl) var(--space-2xl);
   border-radius: var(--panel-radius);
   background: var(--bg-surface-2);
-  transition: background-color 140ms ease;
+  transition: background-color var(--duration) ease;
 }
 
 .toggleRow:hover {

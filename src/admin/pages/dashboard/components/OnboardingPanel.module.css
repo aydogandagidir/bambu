@@ -214,7 +214,7 @@
     margin-bottom: var(--space-xl);
 }
 
-/* "Step 1" is content, not a disabled control — --text-disabled (2.5:1) is
+/* "Step 1" is content, not a disabled control — `--text-disabled` (2.5:1) is
    reserved for disabled states. See docs/design.md → "Text tokens". */
 .stepIndex {
     font-size: var(--text-3xs);

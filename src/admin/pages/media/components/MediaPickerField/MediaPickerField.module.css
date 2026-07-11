@@ -47,7 +47,7 @@
     background: var(--bg-surface);
     text-align: left;
     cursor: pointer;
-    transition: background-color 90ms ease;
+    transition: background-color var(--duration-fast) ease;
 }
 
 .tileClickable:hover,

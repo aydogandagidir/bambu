@@ -212,7 +212,7 @@
     width: 6px;
     height: 6px;
     margin-left: var(--space-xs);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--danger);
     box-shadow: 0 0 0 2px
         color-mix(in srgb, var(--danger) 30%, transparent);
@@ -284,7 +284,7 @@
     max-width: min(320px, calc(100vw - 24px));
     padding: var(--space-xs) var(--space-m);
     border: 1px solid color-mix(in srgb, var(--success) 35%, transparent);
-    border-radius: 6px;
+    border-radius: var(--radius);
     background: var(--bg-surface);
     color: var(--success);
     font-size: var(--text-xs);
@@ -335,7 +335,7 @@
 .publishActionStatusDot {
     width: 6px;
     height: 6px;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--text-subtle);
     flex-shrink: 0;
 }
@@ -380,7 +380,7 @@
     right: 0;
     background: var(--bg-surface);
     border: 1px solid color-mix(in srgb, var(--danger) 40%, transparent);
-    border-radius: 6px;
+    border-radius: var(--radius);
     padding: var(--space-xs) var(--space-m);
     font-size: var(--text-xs);
     color: var(--danger-lighter);

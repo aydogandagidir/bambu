@@ -169,6 +169,7 @@ export function OnboardingPanel({ facts, onDismiss, onFrameworkImported }: Onboa
           </svg>
           <div className={styles.progressText}>
             <span className={styles.progressValue}>{percent}%</span>
+            {/* `.progressLabel` uppercases; the word itself stays a word. */}
             <span className={styles.progressLabel}>complete</span>
           </div>
         </div>

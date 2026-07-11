@@ -223,7 +223,7 @@
     font-weight: 600;
     color: var(--text-subtle);
     padding: var(--space-4xs) var(--space-xs);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--bg-surface-2);
 }
 
@@ -306,7 +306,7 @@
     white-space: nowrap;
     line-height: 1.2;
     padding: var(--space-4xs) var(--space-s);
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: color-mix(in srgb, var(--bg-surface-2) 70%, transparent);
     border: 1px solid var(--border);
     flex-shrink: 0;

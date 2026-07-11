@@ -2,7 +2,7 @@ import { execFile } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import { promisify } from 'node:util'
 import { expect, test, type Locator, type Page } from '@playwright/test'
-import { ANONYMOUS_STATE, OWNER, completeStepUp, login, loginAs } from './helpers'
+import { ANONYMOUS_STATE, OWNER, completeStepUp, expectSignInScreen, login, loginAs } from './helpers'
 
 const execFileAsync = promisify(execFile)
 const E2E_DB_PATH = '.tmp/e2e-agent.db'
@@ -118,7 +118,7 @@ test.describe('users and roles', () => {
         await expect(userRow(page, editedEmail)).toHaveCount(0)
 
         await activeAdmin.goto('/admin/dashboard')
-        await expect(activeAdmin.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
+        await expectSignInScreen(activeAdmin)
       })
 
       const deletedContext = await browser.newContext()
@@ -553,12 +553,12 @@ async function expectLoginRejected(
   password: string,
 ): Promise<void> {
   await page.goto('/admin')
-  await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
+  await expectSignInScreen(page)
   await page.getByLabel('Email').fill(email)
   await page.getByLabel('Password', { exact: true }).fill(password)
   await page.getByRole('button', { name: 'Sign in' }).click()
   await expect(page.getByRole('alert')).toHaveText('Invalid email or password')
-  await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
+  await expectSignInScreen(page)
 }
 
 function escapeRegExp(value: string): string {

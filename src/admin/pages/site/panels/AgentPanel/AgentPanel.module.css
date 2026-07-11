@@ -16,7 +16,7 @@
   backdrop-filter: blur(var(--panel-blur));
   /* Tier-1 light law: top-lit hairline + specular rim */
   border: 1px solid var(--overlay-10);
-  border-radius: 12px;
+  border-radius: var(--panel-radius);
   background:
     linear-gradient(var(--bg-surface), var(--bg-surface)) padding-box,
     var(--hairline-lit) border-box;
@@ -99,7 +99,7 @@
   padding: var(--space-s) var(--space-m);
   background: var(--danger-10);
   border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
-  border-radius: 6px;
+  border-radius: var(--radius);
   color: var(--danger-light);
   font-size: var(--text-xs);
   line-height: 1.5;
@@ -318,7 +318,7 @@
   column-gap: var(--space-s);
   min-width: 0;
   padding: var(--space-xs);
-  border-radius: 12px;
+  border-radius: var(--panel-radius);
   background: var(--overlay-10);
 }
 

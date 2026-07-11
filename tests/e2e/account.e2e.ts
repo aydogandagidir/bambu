@@ -5,6 +5,7 @@ import {
   OWNER,
   completeStepUp,
   expectLoggedIn,
+  expectSignInScreen,
   login,
   loginAs,
   logout,
@@ -429,7 +430,7 @@ test.describe('account', () => {
       page,
     }) => {
       await page.goto('/admin')
-      await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
+      await expectSignInScreen(page)
 
       await page.getByLabel('Email').fill(OWNER.email)
       await page.getByLabel('Password', { exact: true }).fill(`${OWNER.password}-wrong`)
@@ -482,7 +483,7 @@ test.describe('account', () => {
 
         const attackerPage = await attackerContext.newPage()
         await attackerPage.goto('/admin')
-        await expect(attackerPage.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
+        await expectSignInScreen(attackerPage)
 
         for (let attempt = 1; attempt <= 4; attempt += 1) {
           await submitLoginAttempt(
@@ -562,7 +563,7 @@ test.describe('account', () => {
         await expectLoggedIn(page)
 
         await otherPage.goto('/admin/account')
-        await expect(otherPage.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
+        await expectSignInScreen(otherPage)
       } finally {
         await otherContext.close()
       }

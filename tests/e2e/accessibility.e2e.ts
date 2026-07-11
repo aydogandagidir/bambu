@@ -5,6 +5,7 @@ import {
   canvasFrame,
   createPage,
   expectEditorReady,
+  expectSignInScreen,
   expectLoggedIn,
   insertNotchModule,
   login,
@@ -28,7 +29,7 @@ test.describe('keyboard access', () => {
 
   test('logs in with the keyboard only (A11Y-001)', async ({ page }) => {
     await page.goto('/admin')
-    await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
+    await expectSignInScreen(page)
 
     const email = page.getByLabel('Email')
     await email.focus()

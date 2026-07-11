@@ -461,8 +461,8 @@
     color: var(--text-disabled);
     opacity: 0;
     transition:
-        opacity 140ms ease,
-        transform 140ms ease;
+        opacity var(--duration) ease,
+        transform var(--duration) ease;
 }
 
 .dragGrip,
@@ -568,8 +568,8 @@
     opacity: 1;
     transform: none;
     transition:
-        color 140ms ease,
-        background-color 140ms ease;
+        color var(--duration) ease,
+        background-color var(--duration) ease;
 }
 
 .rowItem + .favoriteButton {

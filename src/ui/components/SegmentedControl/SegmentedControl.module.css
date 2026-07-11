@@ -13,7 +13,7 @@
     display: inline-flex;
     align-items: stretch;
     gap: var(--space-4xs);
-    border-radius: 12px;
+    border-radius: var(--panel-radius);
     padding: var(--space-4xs);
     border: 1px solid var(--overlay-20);
 }
@@ -32,7 +32,7 @@
     position: relative;
     flex: 1 1 0;
     min-width: 0;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     background: transparent;
 }
 
@@ -71,7 +71,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 8px;
+    border-radius: var(--radius-lg);
     background: var(--bg-surface-2);
     color: var(--text);
     opacity: 0;

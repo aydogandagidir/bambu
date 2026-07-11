@@ -20,7 +20,7 @@
     right: 8px;
     z-index: 2;
     height: 2px;
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
     background: var(--tree-drop-line);
     pointer-events: none;
     box-shadow: 0 0 0 1px var(--tree-drop-line-shadow);

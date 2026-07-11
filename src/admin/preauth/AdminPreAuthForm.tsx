@@ -45,6 +45,10 @@ interface PhaseCopy {
 // Copy speaks to the person arriving, not to the schema. The step number is a
 // real editorial kicker (01 · Sign in) that ticks across phases — never a
 // color-only signal.
+//
+// The `login` title + submit are duplicated verbatim by the server-rendered
+// skeleton in `server/static.ts`, which paints this screen before React mounts.
+// They must stay in sync or the heading visibly changes under the reader.
 const PHASE_COPY: Record<PreAuthPhase, PhaseCopy> = {
   login: {
     step: '01',

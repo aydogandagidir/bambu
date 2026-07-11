@@ -27,7 +27,7 @@
   backdrop-filter: blur(var(--panel-blur));
   /* Tier-1 light law: top-lit hairline + specular rim */
   border: 1px solid var(--overlay-10);
-  border-radius: 12px;
+  border-radius: var(--panel-radius);
   background:
     linear-gradient(var(--bg-surface), var(--bg-surface)) padding-box,
     var(--hairline-lit) border-box;

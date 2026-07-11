@@ -132,7 +132,7 @@
 }
 
 .shape-pill {
-    border-radius: 999px;
+    border-radius: var(--radius-pill);
 }
 
 .shape-flush {
