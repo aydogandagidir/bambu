@@ -39,17 +39,22 @@
 
 /*
  * Ghost variant has no built-in `aria-pressed="true"` style, so the active
- * table would only show a transient hover background and be hard to tell
- * apart from the rest of the list. Layer a surface fill on the selected
- * row here — same pattern as the `.pill` chips in DataGrid.module.css.
+ * table would only show a transient hover background. Use the brand tint
+ * (not a recessed surface fill) so the selected row reads as active — same
+ * active-nav language as the section rail; brand is the one interaction accent.
  */
 .tableButton[aria-pressed="true"] {
-    background: var(--bg-surface);
+    background: var(--brand-10);
     color: var(--text-bright);
 }
 
 .tableButton[aria-pressed="true"]:hover {
-    background: var(--bg-surface);
+    background: var(--brand-10);
+}
+
+/* Tint the selected row's leading icon brand to complete the active-nav read. */
+.tableButton[aria-pressed="true"] svg {
+    color: var(--brand);
 }
 
 .tableLabel {
@@ -102,9 +107,12 @@
     min-width: 0;
     margin: 0;
     overflow: hidden;
-    color: var(--text-subtle);
-    font-size: var(--text-xs);
-    font-weight: 700;
+    /* Premium eyebrow: small-caps section title reads as a marker, not body text */
+    color: var(--text-muted);
+    font-size: var(--text-2xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: var(--weight-semibold);
     line-height: 1.2;
     text-overflow: ellipsis;
     white-space: nowrap;

@@ -40,9 +40,11 @@
     background: var(--bg-surface-2);
 }
 
+/* Selected lifts a full step above hover and speaks the accent, so a picked
+   segment is unmistakable from a merely-hovered one. */
 .group .segment.segment[aria-pressed="true"] {
-    background: var(--bg-surface-2);
-    color: var(--text);
+    background: var(--bg-surface-3);
+    color: var(--brand-text);
 }
 
 /* Trailing modifier — used by the render-prop's `trailingClassName`. Switches

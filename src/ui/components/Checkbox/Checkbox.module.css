@@ -74,10 +74,13 @@
     box-shadow: var(--shadow-input-focus);
 }
 
+/* Checked is the brand state — matches Switch-on and every selected control.
+   --brand-ink is the >=8:1 dark ink for glyphs ON a brand fill, so the tick
+   stays AA. */
 .checkbox .input:checked + .box {
-    background: var(--text);
-    border-color: var(--text);
-    color: var(--bg-body);
+    background: var(--brand);
+    border-color: var(--brand);
+    color: var(--brand-ink);
 }
 
 .checkbox .input:disabled + .box {

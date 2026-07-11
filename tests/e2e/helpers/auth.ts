@@ -19,7 +19,7 @@ import { OWNER } from './constants'
  */
 export async function completeSetupOrLogin(page: Page): Promise<void> {
   await page.goto('/admin')
-  const setupHeading = page.getByRole('heading', { name: 'Welcome to Bambu' })
+  const setupHeading = page.getByRole('heading', { name: "Let's get you set up" })
   const onSetup = await setupHeading
     .waitFor({ state: 'visible', timeout: 15_000 })
     .then(() => true, () => false)
@@ -28,7 +28,7 @@ export async function completeSetupOrLogin(page: Page): Promise<void> {
     await page.getByLabel('Site name').fill(OWNER.siteName)
     await page.getByLabel('Email').fill(OWNER.email)
     await page.getByLabel('Password', { exact: true }).fill(OWNER.password)
-    await page.getByRole('button', { name: 'Create your site' }).click()
+    await page.getByRole('button', { name: 'Create account' }).click()
   } else {
     await login(page)
   }
@@ -40,8 +40,8 @@ export async function completeSetupOrLogin(page: Page): Promise<void> {
  *
  * `server/static.ts` paints a server-rendered skeleton of this screen into
  * `#root` for every unauthenticated request, and that skeleton is a copy twin:
- * same "Sign in" heading, same Email/Password labels, same "Sign in" button. Its
- * `<form>` does a native `POST /admin/api/cms/login`, so a bare `getByRole`
+ * same "Welcome back" heading, same Email/Password labels, same "Sign in" button.
+ * Its `<form>` does a native `POST /admin/api/cms/login`, so a bare `getByRole`
  * match can resolve against the skeleton and drive it instead of the app.
  *
  * `createRoot().render()` replaces the container's children, so the skeleton's
@@ -49,7 +49,7 @@ export async function completeSetupOrLogin(page: Page): Promise<void> {
  */
 export async function expectSignInScreen(page: Page): Promise<void> {
   await expect(page.locator('[data-initial-login-skeleton]')).toHaveCount(0)
-  await expect(page.getByRole('heading', { name: 'Sign in' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: 'Welcome back' })).toBeVisible()
 }
 
 /** Log in as the owner through the admin login form. Unauthenticated context. */

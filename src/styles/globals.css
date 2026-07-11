@@ -352,6 +352,46 @@
        contrast is unaffected. */
     --admin-aurora-a: rgba(56, 189, 248, 0.14);
     --admin-aurora-b: rgba(200, 182, 255, 0.12);
+    --admin-aurora-c: rgba(142, 230, 200, 0.08);
+
+    /* ── "Gece Penceresi" — the auth / hero atmosphere ─────────────────────
+       Two tiers, deliberately separated (see docs/design.md → "Light and
+       atmosphere"):
+         TIER 1 — the durable, app-wide LIGHT law. `--hairline-lit` +
+                  `--shadow-specular-rim` model every elevated surface as if lit
+                  from one source above: the top edge catches light, the bottom
+                  edge recedes. GPU-free static paint; works on dense tables
+                  where aurora never would.
+         TIER 2 — the hero ATMOSPHERE (auth, onboarding, dashboard hero, empty
+                  states ONLY — never per-tile). The `--auth-aurora-*` blobs are
+                  background-only, non-interactive, and must never dress a
+                  control: `--brand` stays the one interactive accent.
+       All aurora hues derive from existing accents so the chrome stays one
+       material. AA is measured against the SOLID `--auth-card-surface` floor,
+       never the moving sky. */
+    --hairline-lit: linear-gradient(180deg, var(--overlay-20), var(--overlay-5));
+    --shadow-specular-rim: inset 0 1px 0 var(--overlay-10);
+
+    --auth-aurora-brand: rgba(56, 189, 248, 0.2);
+    --auth-aurora-lilac: rgba(200, 182, 255, 0.16);
+    --auth-aurora-mint: rgba(142, 230, 200, 0.14);
+    --auth-vignette: radial-gradient(
+        120% 120% at 50% 38%,
+        transparent 40%,
+        rgba(2, 6, 16, 0.72) 100%
+    );
+    --auth-card-surface: rgba(12, 20, 36, 0.72);
+    --auth-card-radius: 20px;
+    --auth-card-blur: blur(40px) saturate(1.2);
+    --auth-bloom: var(--brand-20);
+    --auth-sheen: rgba(255, 255, 255, 0.06);
+    --auth-seal-trace: linear-gradient(90deg, transparent, var(--brand), transparent);
+
+    /* Named kinetic tier — reserved for hero / celebration surfaces only.
+       Daily-use admin chrome keeps the calm 90/140/240ms motion above. */
+    --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+    --duration-entrance: 520ms;
+    --duration-spring: 420ms;
 }
 
 /* Reduced motion support — Constraint from UX Guideline #189 */

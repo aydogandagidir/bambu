@@ -73,7 +73,8 @@
 .auditTitle {
     color: var(--text-bright);
     font-size: var(--text-l);
-    font-weight: 800;
+    /* tokenize off-scale 800 to the --weight-* scale */
+    font-weight: var(--weight-bold);
     line-height: 1.2;
 }
 
@@ -95,7 +96,8 @@
 .error {
     margin: 0;
     font-size: var(--text-s);
-    font-weight: 700;
+    /* tokenize raw 700 to the --weight-* scale */
+    font-weight: var(--weight-bold);
     line-height: 1.45;
 }
 

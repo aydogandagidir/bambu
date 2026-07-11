@@ -556,7 +556,7 @@ async function expectLoginRejected(
   await expectSignInScreen(page)
   await page.getByLabel('Email').fill(email)
   await page.getByLabel('Password', { exact: true }).fill(password)
-  await page.getByRole('button', { name: 'Sign In' }).click()
+  await page.getByRole('button', { name: 'Sign in' }).click()
   await expect(page.getByRole('alert')).toHaveText('Invalid email or password')
   await expectSignInScreen(page)
 }

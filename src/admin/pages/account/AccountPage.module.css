@@ -53,8 +53,11 @@
     display: grid;
     gap: var(--space-s);
     padding: var(--space-2xl);
-    border-radius: var(--panel-radius);
+    /* Tile card, not a floating panel — use the tile radius. */
+    border-radius: var(--card-radius);
     background: var(--bg-surface-2);
+    /* Top-lit rim so the flat tile catches the overhead light. */
+    box-shadow: var(--shadow-specular-rim);
     transition: background 0.3s;
 }
 

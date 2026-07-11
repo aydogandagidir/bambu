@@ -11,7 +11,7 @@ import { useAdminUi } from '@admin/state/adminUi'
 import { requestCmsSiteReload } from '@admin/state/adminEvents'
 import { Button } from '@ui/components/Button'
 import type { PixelArtIconComponent } from '@core/dashboard'
-import type { OnboardingFacts } from '../hooks/useOnboardingState'
+import type { OnboardingFacts, OnboardingStepState } from '../hooks/useOnboardingState'
 import {
   FrameworkManagerDialog,
   type FrameworkManagerApplier,
@@ -31,6 +31,13 @@ interface StepDef {
     | { kind: 'navigate'; to: string }
     | { kind: 'settings-modal' }
     | { kind: 'framework-import' }
+}
+
+/** Screen-reader wording for each step state — the visual tint/check alone can't say this. */
+const STATE_LABEL: Record<OnboardingStepState, string> = {
+  done: 'Completed',
+  active: 'In progress',
+  todo: 'Not started',
 }
 
 const STEPS: readonly StepDef[] = [
@@ -133,7 +140,13 @@ export function OnboardingPanel({ facts, onDismiss, onFrameworkImported }: Onboa
         </div>
 
         <div className={styles.progressContainer}>
-          <svg className={styles.progressSvg} width="120" height="120" viewBox="0 0 100 100">
+          <svg
+            className={styles.progressSvg}
+            width="120"
+            height="120"
+            viewBox="0 0 100 100"
+            aria-hidden="true"
+          >
             <circle
               className={styles.progressTrack}
               cx="50"
@@ -169,13 +182,13 @@ export function OnboardingPanel({ facts, onDismiss, onFrameworkImported }: Onboa
       </div>
 
       {/* Right Grid: Setup Tasks */}
-      <div className={styles.bentoGrid}>
+      <ul className={styles.bentoGrid}>
         {states.map(({ step, state }, i) => {
           const StepIcon = step.icon
           const variant = state === 'done' ? 'ghost' : state === 'active' ? 'primary' : 'secondary'
-          
+
           return (
-            <div className={styles.stepCard} data-state={state} key={step.id}>
+            <li className={styles.stepCard} data-state={state} key={step.id}>
               <div className={styles.stepHeader}>
                 <span className={styles.stepIndex}>Step {i + 1}</span>
                 <span className={styles.stepIcon} aria-hidden="true">
@@ -186,16 +199,19 @@ export function OnboardingPanel({ facts, onDismiss, onFrameworkImported }: Onboa
                 <h3>{step.title}</h3>
                 <p>{step.desc}</p>
               </div>
+              {/* The check icon and the card tint carry state visually only. Assistive
+                  tech needs it in text, so state stays announced alongside the title. */}
+              <span className={styles.srOnly}>{STATE_LABEL[state]}</span>
               <div className={styles.stepFoot}>
                 <Button variant={variant} size="sm" onClick={() => runStep(step)} className={styles.stepButton}>
                   {step.cta}
                   <ChevronRightIcon size={10} aria-hidden="true" />
                 </Button>
               </div>
-            </div>
+            </li>
           )
         })}
-      </div>
+      </ul>
 
       <FrameworkManagerDialog
         open={frameworkImportOpen}

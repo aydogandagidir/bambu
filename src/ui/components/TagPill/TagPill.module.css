@@ -15,7 +15,8 @@
     border-radius: var(--radius);
     background: linear-gradient(0deg, var(--pill-bg), transparent);
     color: var(--pill-color);
-    font-weight: 620;
+    /* tokenize off-scale 620 to the --weight-* scale */
+    font-weight: var(--weight-semibold);
     line-height: 1.4;
     user-select: none;
     transition:

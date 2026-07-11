@@ -211,96 +211,124 @@ function requestHasSessionCookie(req: Request | undefined): boolean {
 // ~3 KB; we keep them above the fold of the initial HTML so paint can
 // happen on the first packet.
 const LOGIN_SKELETON_STYLES = `
-  /* Login skeleton — visible only until React mounts. Mirrors the visual
-     of the React AdminPreAuthForm closely enough that hydration is not
-     jarring. */
+  /* Login skeleton — visible only until React mounts. Mirrors the first frame
+     of the "Gece Penceresi" AdminPreAuthForm (dark stage, a static hint of the
+     sky-well, a frosted card, gradient title) so hydration into the animated
+     aurora version is seamless. Raw values: this is server-rendered critical
+     CSS, outside the token gates. */
   .login-skeleton {
+    position: relative;
     display: grid;
     min-height: 100vh;
     place-items: center;
-    overflow: auto;
-    color: #ededed;
-    font-family: system-ui, -apple-system, "Segoe UI", Roboto, Inter, sans-serif;
+    padding: 32px 16px;
+    overflow: hidden;
+    color: #e8edf5;
+    background:
+      radial-gradient(60vmax 50vmax at 20% 0%, rgba(56, 189, 248, 0.14), transparent 60%),
+      radial-gradient(55vmax 55vmax at 100% 100%, rgba(200, 182, 255, 0.1), transparent 60%),
+      #050b14;
+    font-family: "Inter Variable", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   }
   .login-skeleton__panel {
+    position: relative;
     width: 100%;
-    max-width: 360px;
-    padding: 36px 32px 32px;
-    border-radius: 12px;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.32);
+    max-width: 400px;
+    padding: 32px 30px 26px;
+    border-radius: 20px;
+    background: rgba(12, 20, 36, 0.72);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 8px 32px rgba(2, 6, 16, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
     box-sizing: border-box;
   }
   .login-skeleton__brand {
     display: flex;
     align-items: center;
-    gap: 8px;
-    margin-bottom: 24px;
-    font-size: 12px;
-    color: rgba(255, 255, 255, 0.6);
-    letter-spacing: 0.02em;
+    gap: 10px;
+    margin-bottom: 22px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: #8b96ab;
   }
-  .login-skeleton__brand-dot {
-    width: 6px;
-    height: 6px;
-    border-radius: 50%;
-    background: #5b8def;
+  .login-skeleton__kicker { margin-left: auto; }
+  .login-skeleton__kicker b { color: #7cd0fc; font-weight: 600; }
+  .login-skeleton__rule {
+    height: 1px;
+    margin-bottom: 20px;
+    background: linear-gradient(90deg, #38bdf8, transparent);
   }
   .login-skeleton__title {
-    margin: 0 0 24px;
-    font-size: 22px;
+    margin: 0 0 6px;
+    font-size: 27px;
     font-weight: 600;
-    color: #f5f5f5;
-    line-height: 1.2;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    background: linear-gradient(135deg, #ffffff 0%, #7cd0fc 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
   }
+  .login-skeleton__subtitle { margin: 0 0 22px; font-size: 14px; color: #a9b3c6; }
   .login-skeleton__field { display: block; margin-bottom: 14px; }
   .login-skeleton__field > span {
     display: block;
-    margin-bottom: 6px;
+    margin-bottom: 7px;
     font-size: 12px;
-    color: rgba(255, 255, 255, 0.6);
+    font-weight: 600;
+    color: #a9b3c6;
   }
   .login-skeleton__input {
     width: 100%;
     box-sizing: border-box;
-    padding: 9px 12px;
-    border-radius: 12px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    background: rgba(255, 255, 255, 0.04);
-    color: #f5f5f5;
-    font-size: 14px;
+    min-height: 42px;
+    padding: 0 14px;
+    border-radius: 1em;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: transparent;
+    color: #e8edf5;
+    font-size: 15px;
     font-family: inherit;
     outline: none;
-    transition: border-color 0.12s ease, box-shadow 0.12s ease;
+    transition: border-color 0.14s ease, box-shadow 0.14s ease;
   }
   .login-skeleton__input:focus {
-    border-color: rgba(91, 141, 239, 0.6);
-    box-shadow: 0 0 0 3px rgba(91, 141, 239, 0.15);
+    border-color: rgba(56, 189, 248, 0.55);
+    box-shadow: inset 0 0 0 1px rgba(56, 189, 248, 0.35), 0 0 0 3px rgba(56, 189, 248, 0.1);
   }
   .login-skeleton__submit {
     width: 100%;
-    padding: 10px 16px;
-    margin-top: 6px;
-    border-radius: 12px;
-    border: 1px solid transparent;
-    background: #f5f5f5;
-    color: #000;
-    font-size: 14px;
-    font-weight: 500;
+    height: 44px;
+    margin-top: 4px;
+    border-radius: 1em;
+    border: 0;
+    background: #38bdf8;
+    color: #062033;
+    font-size: 15px;
+    font-weight: 600;
     font-family: inherit;
     cursor: pointer;
   }
-  .login-skeleton__submit:hover { background: #fff; }
+  .login-skeleton__submit:hover { background: #5ecbfa; }
+  .login-skeleton__trust {
+    display: flex;
+    justify-content: center;
+    margin-top: 18px;
+    font-size: 11px;
+    color: #8b96ab;
+  }
 `
 
 const LOGIN_SKELETON_HTML = `<div class="login-skeleton" data-initial-login-skeleton="true">
   <div class="login-skeleton__panel">
     <div class="login-skeleton__brand">
-      <span class="login-skeleton__brand-dot" aria-hidden="true"></span>
-      <span>Admin</span>
+      <span>Bambu</span>
+      <span class="login-skeleton__kicker"><b>01</b> · Sign in</span>
     </div>
-    <h1 class="login-skeleton__title">Sign in</h1>
+    <div class="login-skeleton__rule" aria-hidden="true"></div>
+    <h1 class="login-skeleton__title">Welcome back</h1>
+    <p class="login-skeleton__subtitle">Sign in to your workspace.</p>
     <form class="login-skeleton__form" action="/admin/api/cms/login" method="POST">
       <label class="login-skeleton__field">
         <span>Email</span>
@@ -312,6 +340,7 @@ const LOGIN_SKELETON_HTML = `<div class="login-skeleton" data-initial-login-skel
       </label>
       <button class="login-skeleton__submit" type="submit">Sign in</button>
     </form>
+    <p class="login-skeleton__trust">Your own isolated instance — never a shared database.</p>
   </div>
 </div>`
 

@@ -16,15 +16,39 @@
     position: relative;
 }
 
+/* Shell aurora — the same "Gece Penceresi" sky the auth screen wears, dialled
+   to a whisper so it breathes behind dense content without touching contrast.
+   Three faint sources drift on one slow, desynced loop; frozen to a static
+   composed frame under prefers-reduced-motion. Kept at shell level only —
+   never per-tile. */
 .meshBackground {
     position: absolute;
-    inset: 0;
+    inset: -10%;
     pointer-events: none;
     z-index: 0;
     background-image:
-        radial-gradient(at 0% 0%, var(--admin-aurora-a) 0px, transparent 50%),
-        radial-gradient(at 100% 0%, var(--admin-aurora-b) 0px, transparent 50%);
-    opacity: 0.8;
+        radial-gradient(42vmax 42vmax at 12% -6%, var(--admin-aurora-a), transparent 60%),
+        radial-gradient(46vmax 46vmax at 100% 4%, var(--admin-aurora-b), transparent 60%),
+        radial-gradient(40vmax 40vmax at 78% 100%, var(--admin-aurora-c), transparent 62%);
+    opacity: 0.9;
+    will-change: transform;
+    animation: adminMeshDrift 90s var(--ease) infinite;
+}
+
+@keyframes adminMeshDrift {
+    0%,
+    100% {
+        transform: translate3d(0, 0, 0) scale(1);
+    }
+    50% {
+        transform: translate3d(-2%, -1.5%, 0) scale(1.06);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .meshBackground {
+        animation: none;
+    }
 }
 
 .body {
@@ -51,7 +75,19 @@
     align-items: end;
     gap: var(--space-3xl);
     padding-bottom: var(--space-5xl);
-    border-bottom: 1px solid var(--overlay-10);
+    border-bottom: none;
+    position: relative;
+}
+
+/* Directional light-law seam: brightest under the gradient title, fading toward the actions. */
+.header::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    background: linear-gradient(90deg, var(--overlay-20), transparent);
 }
 
 .titleGroup {
@@ -101,6 +137,12 @@
 }
 
 @media (max-width: 760px) {
+    /* Stack the rail (now a horizontal top bar) above a full-width body,
+       instead of letting it eat 250px beside the page. */
+    .shell {
+        flex-direction: column;
+    }
+
     .body {
         padding: var(--space-10xl) var(--space-3xl) var(--space-7xl);
     }

@@ -3,10 +3,38 @@
    ========================================================================== */
 
 .bentoBox {
+    position: relative;
+    isolation: isolate;
     display: grid;
     grid-template-columns: 280px 1fr;
     gap: var(--space-2xl);
     width: 100%;
+    /* Grid/flex items default to min-width:auto, which pins them at min-content
+       and lets the hero punch out of a narrow viewport. Let it shrink instead. */
+    min-width: 0;
+}
+
+/* TIER-2 hero atmosphere: a soft aurora bloom behind the whole bento so the
+   first-run wizard reads as the lit centre of the dashboard. Background-only,
+   static, and never on the glass tiles themselves (the sky shows THROUGH their
+   frost, it does not dress them). The children sit above via isolation + z-index. */
+.bentoBox::before {
+    content: "";
+    position: absolute;
+    inset: calc(-1 * var(--space-6xl));
+    z-index: 0;
+    pointer-events: none;
+    background:
+        radial-gradient(40% 60% at 12% 6%, var(--auth-aurora-brand), transparent 60%),
+        radial-gradient(46% 62% at 96% 96%, var(--auth-aurora-lilac), transparent 62%);
+    opacity: 0.7;
+    filter: blur(20px);
+}
+
+.bentoSidebar,
+.bentoGrid {
+    position: relative;
+    z-index: 1;
 }
 
 @media (max-width: 900px) {
@@ -20,6 +48,7 @@
    ========================================================================== */
 
 .bentoSidebar {
+    min-width: 0;
     background: var(--glass-surface);
     border: 1px solid var(--glass-border);
     border-radius: var(--card-radius);
@@ -36,7 +65,7 @@
 
 .sidebarTop h2 {
     font-size: var(--text-2xl);
-    font-weight: 600;
+    font-weight: var(--weight-semibold);
     color: var(--text-bright);
     margin-bottom: var(--space-2xs);
     background: var(--text-gradient-premium);
@@ -49,10 +78,14 @@
     color: var(--text-muted);
 }
 
+/* `width: 100%` (not `min(120px, 100%)`) so intrinsic sizing treats it as auto —
+   a fixed width would contribute 120px of min-content and drag the whole hero
+   past a narrow viewport. `max-width` still caps the ring on roomy screens. */
 .progressContainer {
     position: relative;
-    width: 120px;
-    height: 120px;
+    width: 100%;
+    max-width: 120px;
+    aspect-ratio: 1;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -61,8 +94,9 @@
 
 .progressSvg {
     position: absolute;
-    top: 0;
-    left: 0;
+    inset: 0;
+    width: 100%;
+    height: 100%;
     transform: rotate(-90deg); /* Start from top */
 }
 
@@ -72,7 +106,7 @@
 
 .progressIndicator {
     stroke: var(--accent-3);
-    transition: stroke-dashoffset 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: stroke-dashoffset var(--duration-entrance) var(--ease-out);
     filter: drop-shadow(0 0 8px color-mix(in srgb, var(--accent-3) 40%, transparent));
 }
 
@@ -84,13 +118,13 @@
 
 .progressValue {
     font-size: var(--text-4xl);
-    font-weight: 700;
+    font-weight: var(--weight-bold);
     color: var(--text-bright);
 }
 
 .progressLabel {
     font-size: var(--text-3xs);
-    font-weight: 600;
+    font-weight: var(--weight-semibold);
     letter-spacing: 0.1em;
     color: var(--accent-3);
     text-transform: uppercase;
@@ -113,10 +147,28 @@
    Right Grid: Setup Tasks
    ========================================================================== */
 
+/* A <ul> so the steps keep list semantics; the grid does the visual work.
+   `min(240px, 100%)` lets the track collapse below its ideal width on a phone
+   instead of forcing the hero wider than the viewport. */
 .bentoGrid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
     gap: var(--space-xl);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    min-width: 0;
+}
+
+/* Step state reaches assistive tech as text while staying visually silent. */
+.srOnly {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
 }
 
 /* ==========================================================================
@@ -124,6 +176,8 @@
    ========================================================================== */
 
 .stepCard {
+    position: relative;
+    min-width: 0;
     background: var(--glass-surface);
     border: 1px solid var(--glass-border);
     border-radius: var(--card-radius);
@@ -133,7 +187,10 @@
     box-shadow: var(--shadow-premium);
     backdrop-filter: var(--glass-blur);
     -webkit-backdrop-filter: var(--glass-blur);
-    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    transition:
+        transform var(--duration-slow) var(--ease),
+        border-color var(--duration-slow) var(--ease),
+        box-shadow var(--duration-slow) var(--ease);
     min-height: 200px;
 }
 
@@ -161,7 +218,7 @@
    reserved for disabled states. See docs/design.md → "Text tokens". */
 .stepIndex {
     font-size: var(--text-3xs);
-    font-weight: 600;
+    font-weight: var(--weight-semibold);
     letter-spacing: 0.1em;
     color: var(--text-subtle);
 }
@@ -197,7 +254,7 @@
 
 .stepBody h3 {
     font-size: var(--text-m);
-    font-weight: 600;
+    font-weight: var(--weight-semibold);
     color: var(--text-bright);
     margin-bottom: var(--space-xs);
 }
@@ -215,4 +272,35 @@
 .stepButton {
     width: 100%;
     justify-content: space-between;
+}
+
+/* ==========================================================================
+   Phones — must come last: a media query adds no specificity, so these
+   overrides only win by source order.
+   ==========================================================================
+
+   The admin shell keeps the section rail beside the page even at 390px, so the
+   hero gets roughly a hundred pixels. Shed the decorative chevron, tighten the
+   glass padding, and let the action label wrap — otherwise the card sits at its
+   min-content width and punches out of the viewport. */
+@media (max-width: 760px) {
+    .bentoSidebar,
+    .stepCard {
+        padding: var(--space-l);
+    }
+
+    .stepCard {
+        min-height: 0;
+    }
+
+    .stepCard .stepButton {
+        white-space: normal;
+        height: auto;
+        min-height: 26px;
+        padding: var(--space-3xs) var(--space-s);
+    }
+
+    .stepCard .stepButton svg {
+        display: none;
+    }
 }

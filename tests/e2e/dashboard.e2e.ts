@@ -208,13 +208,17 @@ test.describe('dashboard', () => {
 
     const panel = onboardingPanel(page)
     await expect(panel).toBeVisible({ timeout: 20_000 })
-    await expect(panel).toContainText('2 of 5 steps complete.')
+    // A freshly set-up owner has only Site Identity done (the site name was set
+    // during setup); the seed Home page alone doesn't satisfy First Page, which
+    // needs a second page. So the ring reads 20% — one of five steps complete.
+    await expect(panel).toContainText('5 steps to a site you can publish.')
+    await expect(panel).toContainText('20%')
 
-    await expectOnboardingStep(panel, 'Set site identity', 'Completed', 'Open settings')
-    await expectOnboardingStep(panel, 'Choose Core Framework import', 'In progress', 'Configure')
-    await expectOnboardingStep(panel, 'Create your first page', 'Completed', 'New page')
-    await expectOnboardingStep(panel, 'Install a plugin', 'Not started', 'Browse plugins')
-    await expectOnboardingStep(panel, 'Invite your team', 'Not started', 'Add members')
+    await expectOnboardingStep(panel, 'Site Identity', 'Completed', 'Open settings')
+    await expectOnboardingStep(panel, 'Core Framework', 'In progress', 'Import')
+    await expectOnboardingStep(panel, 'First Page', 'Not started', 'New page')
+    await expectOnboardingStep(panel, 'Install Plugin', 'Not started', 'Browse')
+    await expectOnboardingStep(panel, 'Invite Team', 'Not started', 'Add members')
 
     await test.step('step actions route to the expected workspaces', async () => {
       await panel.getByRole('button', { name: 'Open settings' }).click()
@@ -227,7 +231,7 @@ test.describe('dashboard', () => {
       await page.goto('/admin/dashboard')
       await expect(panel).toBeVisible({ timeout: 20_000 })
 
-      await panel.getByRole('button', { name: 'Browse plugins' }).click()
+      await panel.getByRole('button', { name: 'Browse' }).click()
       await expect(page).toHaveURL(/\/admin\/plugins$/)
       await page.goto('/admin/dashboard')
       await expect(panel).toBeVisible({ timeout: 20_000 })
@@ -246,7 +250,7 @@ test.describe('dashboard', () => {
       await expectControlContained(page, panel, 'mobile onboarding panel')
       await expectControlContained(
         page,
-        onboardingStep(panel, 'Invite your team').getByRole('button', { name: 'Add members' }),
+        onboardingStep(panel, 'Invite Team').getByRole('button', { name: 'Add members' }),
         'mobile add members action',
       )
     })
@@ -261,7 +265,7 @@ test.describe('dashboard', () => {
       await page.reload()
       await expect(page.getByRole('heading', { name: 'Overview' })).toBeVisible()
       await expect(
-        page.getByRole('heading', { name: 'Finish setting up your site' }),
+        page.getByRole('heading', { name: 'Setup checklist' }),
       ).toHaveCount(0)
     })
   })
@@ -284,7 +288,7 @@ function gridCell(page: Page, id: string): Locator {
 
 function onboardingPanel(page: Page): Locator {
   return page.locator('section').filter({
-    has: page.getByRole('heading', { name: 'Finish setting up your site' }),
+    has: page.getByRole('heading', { name: 'Setup checklist' }),
   })
 }
 

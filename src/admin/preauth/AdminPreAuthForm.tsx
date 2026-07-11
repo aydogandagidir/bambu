@@ -6,6 +6,8 @@ import { Input } from '@ui/components/Input'
 import { LoaderIcon } from 'pixel-art-icons/icons/loader'
 import { EyeSolidIcon } from 'pixel-art-icons/icons/eye-solid'
 import { EyeOffSolidIcon } from 'pixel-art-icons/icons/eye-off-solid'
+import { CircleAlertSolidIcon } from 'pixel-art-icons/icons/circle-alert-solid'
+import { LockSolidIcon } from 'pixel-art-icons/icons/lock-solid'
 import {
   getCurrentCmsUser,
   loginCms,
@@ -32,24 +34,46 @@ interface AdminPreAuthFormProps {
 }
 
 interface PhaseCopy {
+  step: string
+  kicker: string
   title: string
+  subtitle: string
   submit: string
   submitPending: string
 }
 
-/**
- * Copy speaks to the person in front of the screen, not to the schema behind it.
- * `POST /setup` creates a site and its first owner — "Create your site" is what
- * that means to them; "Create Admin" was the name of the row we insert.
- *
- * The `login` strings are duplicated verbatim by the server-rendered skeleton in
- * `server/static.ts`, which paints this screen before React mounts. They must
- * stay in sync or the heading visibly changes under the reader.
- */
+// Copy speaks to the person arriving, not to the schema. The step number is a
+// real editorial kicker (01 · Sign in) that ticks across phases — never a
+// color-only signal.
+//
+// The `login` title + submit are duplicated verbatim by the server-rendered
+// skeleton in `server/static.ts`, which paints this screen before React mounts.
+// They must stay in sync or the heading visibly changes under the reader.
 const PHASE_COPY: Record<PreAuthPhase, PhaseCopy> = {
-  setup: { title: 'Welcome to Bambu', submit: 'Create your site', submitPending: 'Creating your site' },
-  login: { title: 'Sign in', submit: 'Sign in', submitPending: 'Signing in' },
-  mfa: { title: 'Two-Factor Authentication', submit: 'Verify', submitPending: 'Verifying' },
+  login: {
+    step: '01',
+    kicker: 'Sign in',
+    title: 'Welcome back',
+    subtitle: 'Sign in to your workspace.',
+    submit: 'Sign in',
+    submitPending: 'Signing in',
+  },
+  setup: {
+    step: '02',
+    kicker: 'Set up',
+    title: "Let's get you set up",
+    subtitle: 'Create your owner account.',
+    submit: 'Create account',
+    submitPending: 'Creating',
+  },
+  mfa: {
+    step: '03',
+    kicker: 'Security',
+    title: "Verify it's you",
+    subtitle: 'Enter the 6-digit code from your app.',
+    submit: 'Verify',
+    submitPending: 'Verifying',
+  },
 }
 
 const MIN_PASSWORD_LENGTH = 12
@@ -83,6 +107,7 @@ export function AdminPreAuthForm({
   const [password, setPassword] = useState('')
   const [mfaCode, setMfaCode] = useState('')
   const [submitting, setSubmitting] = useState(false)
+  const [sealing, setSealing] = useState(false)
   const [error, setError] = useState<string | null>(initialError)
   const [showPassword, setShowPassword] = useState(false)
 
@@ -90,6 +115,14 @@ export function AdminPreAuthForm({
   const emailId = useId()
   const passwordId = useId()
   const mfaCodeId = useId()
+
+  // On a real success, trace the card border once before handing off. The boot
+  // into the admin shell already has load time, so this ~320ms beat is felt as
+  // delight, not delay. Under reduced motion the trace resolves instantly.
+  function sealAndHandOff(user: CmsCurrentUser) {
+    setSealing(true)
+    window.setTimeout(() => onAuthenticated(user), 320)
+  }
 
   async function handleSetup(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -100,7 +133,7 @@ export function AdminPreAuthForm({
     await runAuthAction(async () => {
       await setupCms({ siteName, email, password })
       await loginCms({ email, password })
-      onAuthenticated(await getCurrentCmsUser())
+      sealAndHandOff(await getCurrentCmsUser())
     }, 'Setup failed', setSubmitting, setError)
   }
 
@@ -114,7 +147,7 @@ export function AdminPreAuthForm({
         onPhaseChange('mfa')
         return
       }
-      onAuthenticated(await getCurrentCmsUser())
+      sealAndHandOff(await getCurrentCmsUser())
     }, 'Login failed', setSubmitting, setError)
   }
 
@@ -124,17 +157,15 @@ export function AdminPreAuthForm({
       await verifyCmsMfa({ code: mfaCode })
       const user = await getCurrentCmsUser()
       setMfaCode('')
-      onAuthenticated(user)
+      sealAndHandOff(user)
     }, 'MFA verification failed', setSubmitting, setError)
   }
 
   const copy = PHASE_COPY[phase]
   const submitLabel = submitting ? copy.submitPending : copy.submit
 
-  // Pre-auth brand row: when the install has picked a favicon, render it
-  // in place of the default icon AND swap the "Bambu" label for
-  // the operator-configured site name. When neither is set, keep the
-  // default mark + product name so a fresh clone still looks like itself.
+  // When the install has picked a favicon, render it as the brand mark AND
+  // swap the "Bambu" wordmark for the operator-configured site name.
   const brandLabel = publicSite.name ?? 'Bambu'
 
   const onSubmit =
@@ -144,130 +175,155 @@ export function AdminPreAuthForm({
 
   return (
     <main className={panelStyles.page}>
-      <section className={panelStyles.panel} aria-labelledby="admin-entry-title">
-        <div className={styles.brandRow}>
-          {publicSite.faviconUrl ? (
-            <img
-              className={styles.brandFavicon}
-              src={publicSite.faviconUrl}
-              alt=""
-              aria-hidden="true"
-              draggable={false}
-            />
-          ) : (
-            <div className={styles.brandIcon} aria-hidden="true">
-              <img src="/favicon.svg" alt="" width={16} height={16} />
-            </div>
-          )}
-          <span>{brandLabel}</span>
-        </div>
+      <div className={panelStyles.stage} aria-hidden="true">
+        <div className={`${panelStyles.blob} ${panelStyles.blobBrand}`} />
+        <div className={`${panelStyles.blob} ${panelStyles.blobLilac}`} />
+        <div className={`${panelStyles.blob} ${panelStyles.blobMint}`} />
+      </div>
+      <div className={panelStyles.vignette} aria-hidden="true" />
 
-        <h1 id="admin-entry-title" className={panelStyles.title}>{copy.title}</h1>
-
-        <form className={styles.form} onSubmit={onSubmit}>
-          {phase === 'mfa' ? (
-            <label className={styles.field} htmlFor={mfaCodeId}>
-              <span>Authentication code</span>
-              <Input
-                id={mfaCodeId}
-                value={mfaCode}
-                onChange={(event) => setMfaCode(event.target.value)}
-                required
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                data-testid="admin-mfa-code"
+      <section
+        className={panelStyles.panel}
+        aria-labelledby="admin-entry-title"
+        data-sealing={sealing}
+      >
+        <div className={styles.stagger}>
+          <div className={styles.brandRow}>
+            {publicSite.faviconUrl ? (
+              <img
+                className={styles.brandFavicon}
+                src={publicSite.faviconUrl}
+                alt=""
+                aria-hidden="true"
+                draggable={false}
               />
-            </label>
-          ) : phase === 'setup' && (
-            <label className={styles.field} htmlFor={siteNameId}>
-              <span>Site name</span>
-              <Input
-                id={siteNameId}
-                value={siteName}
-                onChange={(event) => setSiteName(event.target.value)}
-                required
-                autoComplete="organization"
-              />
-            </label>
-          )}
-
-          {phase !== 'mfa' && (
-            <>
-              <label className={styles.field} htmlFor={emailId}>
-                <span>Email</span>
-                <Input
-                  id={emailId}
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  required
-                  type="email"
-                  autoComplete="email"
-                />
-              </label>
-
-              {/* A <div>, not a <label>: the field carries a show/hide button in
-                  its trailing slot, and a wrapping label pulls that button's
-                  `aria-label` into the input's accessible name — a screen reader
-                  announced this field as "Password Show password". The explicit
-                  `htmlFor` association does the same job without swallowing it. */}
-              <div className={styles.field}>
-                <label htmlFor={passwordId}>Password</label>
-                <Input
-                  id={passwordId}
-                  value={password}
-                  onChange={(event) => setPassword(event.target.value)}
-                  required
-                  minLength={phase === 'setup' ? MIN_PASSWORD_LENGTH : undefined}
-                  type={showPassword ? 'text' : 'password'}
-                  autoComplete={phase === 'setup' ? 'new-password' : 'current-password'}
-                  trailingSlot={
-                    <button
-                      type="button"
-                      aria-label={showPassword ? 'Hide password' : 'Show password'}
-                      onClick={() => setShowPassword((prev) => !prev)}
-                      style={{
-                        background: 'transparent',
-                        border: 'none',
-                        padding: '0',
-                        cursor: 'pointer',
-                        color: 'inherit',
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'center',
-                      }}
-                    >
-                      {showPassword ? (
-                        <EyeOffSolidIcon size={16} aria-hidden="true" />
-                      ) : (
-                        <EyeSolidIcon size={16} aria-hidden="true" />
-                      )}
-                    </button>
-                  }
-                />
+            ) : (
+              <div className={styles.brandIcon} aria-hidden="true">
+                <img src="/favicon.svg" alt="" width={17} height={17} />
               </div>
-            </>
-          )}
-
-          {error && (
-            <p role="alert" className={panelStyles.error}>
-              {error}
-            </p>
-          )}
-
-          <Button
-            variant="primary"
-            size="md"
-            type="submit"
-            fullWidth
-            disabled={submitting}
-            aria-busy={submitting}
-          >
-            {submitting && (
-              <LoaderIcon size={14} className={styles.spinIcon} aria-hidden="true" />
             )}
-            <span>{submitLabel}</span>
-          </Button>
-        </form>
+            <span className={styles.wordmark}>{brandLabel}</span>
+            <span className={styles.kicker}>
+              <b>{copy.step}</b> · {copy.kicker}
+            </span>
+          </div>
+
+          <div className={styles.rule} aria-hidden="true" />
+
+          <div className={styles.head}>
+            <h1 id="admin-entry-title" className={panelStyles.title}>{copy.title}</h1>
+            <p className={styles.subtitle}>{copy.subtitle}</p>
+          </div>
+
+          <form className={styles.form} onSubmit={onSubmit}>
+            {/* Keyed by phase so the incoming fields replay the slide-in. */}
+            <div className={styles.fields} key={phase}>
+              {phase === 'mfa' ? (
+                <div className={styles.field}>
+                  <label htmlFor={mfaCodeId}>Verification code</label>
+                  <Input
+                    id={mfaCodeId}
+                    className={styles.codeInput}
+                    value={mfaCode}
+                    onChange={(event) => setMfaCode(event.target.value)}
+                    required
+                    inputMode="numeric"
+                    maxLength={6}
+                    autoComplete="one-time-code"
+                    placeholder="000000"
+                    data-testid="admin-mfa-code"
+                  />
+                </div>
+              ) : (
+                <>
+                  {phase === 'setup' && (
+                    <div className={styles.field}>
+                      <label htmlFor={siteNameId}>Site name</label>
+                      <Input
+                        id={siteNameId}
+                        value={siteName}
+                        onChange={(event) => setSiteName(event.target.value)}
+                        required
+                        autoComplete="organization"
+                      />
+                    </div>
+                  )}
+
+                  <div className={styles.field}>
+                    <label htmlFor={emailId}>Email</label>
+                    <Input
+                      id={emailId}
+                      value={email}
+                      onChange={(event) => setEmail(event.target.value)}
+                      required
+                      type="email"
+                      autoComplete="email"
+                      placeholder="you@company.com"
+                    />
+                  </div>
+
+                  <div className={styles.field}>
+                    <label htmlFor={passwordId}>Password</label>
+                    <Input
+                      id={passwordId}
+                      value={password}
+                      onChange={(event) => setPassword(event.target.value)}
+                      required
+                      minLength={phase === 'setup' ? MIN_PASSWORD_LENGTH : undefined}
+                      type={showPassword ? 'text' : 'password'}
+                      autoComplete={phase === 'setup' ? 'new-password' : 'current-password'}
+                      placeholder="••••••••"
+                      trailingSlot={
+                        <button
+                          type="button"
+                          className={styles.passwordToggle}
+                          aria-label={showPassword ? 'Hide password' : 'Show password'}
+                          onClick={() => setShowPassword((prev) => !prev)}
+                        >
+                          {showPassword ? (
+                            <EyeOffSolidIcon size={16} aria-hidden="true" />
+                          ) : (
+                            <EyeSolidIcon size={16} aria-hidden="true" />
+                          )}
+                        </button>
+                      }
+                    />
+                  </div>
+                </>
+              )}
+            </div>
+
+            {error && (
+              <p role="alert" className={panelStyles.error}>
+                <CircleAlertSolidIcon size={14} className={panelStyles.errorIcon} aria-hidden="true" />
+                <span>{error}</span>
+              </p>
+            )}
+
+            <Button
+              variant="primary"
+              size="lg"
+              type="submit"
+              fullWidth
+              disabled={submitting || sealing}
+              aria-busy={submitting}
+            >
+              {submitting && (
+                <LoaderIcon size={15} className={styles.spinIcon} aria-hidden="true" />
+              )}
+              <span>{submitLabel}</span>
+            </Button>
+          </form>
+
+          {/* Instatic is single-tenant by design, whether self-hosted or run as a
+              managed per-customer container. Isolation is the one trust claim that
+              holds in every deployment — unlike a transport-security claim, which the
+              app cannot verify (TLS may terminate at a proxy, or be absent entirely). */}
+          <p className={styles.trust}>
+            <LockSolidIcon size={12} aria-hidden="true" />
+            <span>Your own isolated instance — never a shared database.</span>
+          </p>
+        </div>
       </section>
     </main>
   )

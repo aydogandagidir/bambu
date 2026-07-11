@@ -38,7 +38,8 @@
 .thumbEmpty {
     color: var(--text-subtle);
     font-size: var(--text-xs);
-    font-weight: 600;
+    /* tokenize raw 600 to the --weight-* scale */
+    font-weight: var(--weight-semibold);
     text-transform: uppercase;
     letter-spacing: 0.04em;
 }
@@ -66,7 +67,8 @@
     white-space: nowrap;
     color: var(--text);
     font-size: var(--text-m);
-    font-weight: 650;
+    /* tokenize off-scale 650 to the --weight-* scale */
+    font-weight: var(--weight-semibold);
 }
 
 .status {

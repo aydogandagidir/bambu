@@ -1,46 +1,164 @@
+/* Pre-auth form internals for the "Gece Penceresi" auth card. The page /
+   aurora / glass panel / gradient title live in AdminEntry.module.css. */
+
+/* ── Brand lockup ──────────────────────────────────────────────────────── */
 .brandRow {
   display: flex;
   align-items: center;
   gap: var(--space-m);
-  margin-bottom: var(--space-4xl);
-  color: var(--text-muted);
-  font-size: var(--text-s);
-  font-weight: 600;
+  margin-bottom: var(--space-3xl);
 }
 
 .brandIcon {
   display: grid;
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
   place-items: center;
-  border-radius: var(--radius);
+  border-radius: var(--radius-lg);
   background: var(--overlay-10);
-  color: var(--text);
+  color: var(--brand);
+  box-shadow: var(--shadow-specular-rim);
 }
 
-/* Operator-provided favicon used as the login brand mark. Object-fit cover
-   so the asset crops cleanly regardless of aspect ratio; the rounded tile
-   keeps it visually paired with the default brandIcon background. */
+/* Operator-provided favicon as the brand mark. */
 .brandFavicon {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius);
+  width: 30px;
+  height: 30px;
+  flex: 0 0 auto;
+  border-radius: var(--radius-lg);
   object-fit: cover;
-  flex-shrink: 0;
   user-select: none;
 }
 
+.wordmark {
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+}
+
+/* Editorial phase kicker: "01 · SIGN IN". The number is real text, never
+   color-alone, and ticks across phases. */
+.kicker {
+  margin-left: auto;
+  font-size: var(--text-xs);
+  font-weight: var(--weight-semibold);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--text-subtle);
+  font-variant-numeric: tabular-nums;
+}
+
+.kicker b {
+  color: var(--brand-text);
+  font-weight: var(--weight-semibold);
+}
+
+/* Drawn brand rule — a 1px brand line that wipes in from the left. */
+.rule {
+  height: 1px;
+  margin-bottom: var(--space-2xl);
+  background: linear-gradient(90deg, var(--brand), transparent);
+  transform-origin: left;
+  animation: authRuleIn var(--duration-entrance) var(--ease-out) 200ms both;
+}
+
+@keyframes authRuleIn {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
+.head {
+  margin-bottom: var(--space-3xl);
+}
+
+.subtitle {
+  margin: var(--space-s) 0 0;
+  font-size: var(--text-l);
+  color: var(--text-muted);
+  line-height: 1.5;
+}
+
+/* ── Form ──────────────────────────────────────────────────────────────── */
 .form {
   display: grid;
   gap: var(--space-xl);
 }
 
+.fields {
+  display: grid;
+  gap: var(--space-xl);
+  animation: authSwapIn var(--duration-spring) var(--ease-out) both;
+}
+
+@keyframes authSwapIn {
+  from {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
 .field {
   display: grid;
   gap: var(--space-xs);
-  color: var(--text-muted);
+}
+
+.field label {
   font-size: var(--text-s);
-  font-weight: 600;
+  font-weight: var(--weight-semibold);
+  color: var(--text-muted);
+  transition:
+    color var(--duration) var(--ease),
+    transform var(--duration) var(--ease);
+}
+
+.field:focus-within label {
+  color: var(--text);
+  transform: translateY(-1px);
+}
+
+/* Show/hide-password toggle. A CSS-module class rather than an inline style
+   object (the repo forbids inline styles except for dynamic custom props). */
+.passwordToggle {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: var(--input-radius);
+  background: transparent;
+  color: var(--text-subtle);
+  cursor: pointer;
+  transition:
+    color var(--duration) var(--ease),
+    background var(--duration) var(--ease);
+}
+
+.passwordToggle:hover {
+  color: var(--text);
+  background: var(--overlay-5);
+}
+
+.passwordToggle:focus-visible {
+  outline: none;
+  box-shadow: var(--focus-ring);
+}
+
+/* Six-digit MFA code: tabular figures on a wide grid. */
+.codeInput {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.3em;
 }
 
 @keyframes instaticAdminSpin {
@@ -51,6 +169,52 @@
 
 .spinIcon {
   animation: instaticAdminSpin 0.8s linear infinite;
+}
+
+/* Trust footer — a small lock glyph + reassurance. */
+.trust {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2xs);
+  margin-top: var(--space-2xl);
+  font-size: var(--text-xs);
+  color: var(--text-subtle);
+}
+
+.trust svg {
+  opacity: 0.8;
+}
+
+/* ── Entrance choreography — the card assembles top-down ───────────────── */
+.stagger > * {
+  animation: authRiseIn var(--duration-slow) var(--ease-out) both;
+}
+.stagger > *:nth-child(1) {
+  animation-delay: 90ms;
+}
+.stagger > *:nth-child(2) {
+  animation-delay: 140ms;
+}
+.stagger > *:nth-child(3) {
+  animation-delay: 190ms;
+}
+.stagger > *:nth-child(4) {
+  animation-delay: 240ms;
+}
+.stagger > *:nth-child(5) {
+  animation-delay: 290ms;
+}
+
+@keyframes authRiseIn {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

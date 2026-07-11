@@ -14,6 +14,8 @@
     user-select: none;
     background: var(--bg-surface);
     border-right: 1px solid var(--border-muted);
+    /* Top-lit rim (Tier-1 light law) so the section rail catches light on its top edge. */
+    box-shadow: var(--shadow-specular-rim);
     transition: width var(--duration-slow) var(--ease);
     overflow: hidden;
 }
@@ -85,9 +87,12 @@
     padding: var(--space-2xs) var(--space-s);
     margin-top: var(--space-xl);
     margin-bottom: var(--space-4xs);
+    /* Premium eyebrow: small-caps nav label reads as a section marker, not body text */
     color: var(--text-muted);
-    font-size: var(--text-s);
-    font-weight: var(--weight-medium);
+    font-size: var(--text-2xs);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    font-weight: var(--weight-semibold);
     user-select: none;
 }
 
@@ -148,32 +153,53 @@
 }
 
 .adminLink svg {
-    opacity: 0.55;
-    transform: scale(0.85);
-    transition: opacity 0.1s ease;
+    /* No fractional scale — it fuzzes the pixel-art grid; size via NAV_ICON_SIZE instead. */
+    opacity: 0.8;
+    transition:
+        opacity var(--duration-fast) var(--ease),
+        color var(--duration-fast) var(--ease);
 }
 
 .adminLink:hover svg {
-    opacity: 0.7;
+    opacity: 1;
+    color: var(--text);
 }
 
 .activeSection {
+    position: relative;
     display: flex;
     align-items: center;
     gap: var(--space-s);
     height: 28px;
     padding: 0 var(--space-s);
     border-radius: var(--input-radius);
+    /* Lifted surface + a top-lit rim (Tier-1 light law) so the active
+       section reads as raised out of the rail. */
     background: color-mix(in srgb, var(--bg-surface-2) 80%, transparent);
+    box-shadow: var(--shadow-specular-rim);
     color: var(--text-bright);
     font-size: var(--text-m);
     font-weight: var(--weight-medium);
 }
 
+/* Brand "you are here" indicator — the one sanctioned active-nav accent
+   (docs/design.md: --brand marks active navigation). */
+.activeSection::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 3px;
+    height: 56%;
+    transform: translateY(-50%);
+    border-radius: var(--input-radius);
+    background: var(--brand);
+}
+
 .activeSection svg {
+    /* No fractional scale — it fuzzes the pixel-art grid; size via NAV_ICON_SIZE instead. */
     opacity: 1;
-    transform: scale(0.85);
-    color: var(--text-bright);
+    color: var(--brand);
 }
 
 /* Plugins-error indicator dot — shown next to the Plugins nav label
@@ -368,53 +394,63 @@
     color: var(--success);
 }
 
+/* Phones: the rail becomes a full-width horizontal top bar. Each layout's
+   `.shell` switches to `flex-direction: column` at this same breakpoint, so the
+   bar sits above a full-width page body instead of eating 250px beside it. */
 @media (max-width: 760px) {
     .header {
-        height: 68px;
-        flex-wrap: wrap;
-        align-content: center;
-        row-gap: var(--space-4xs);
-        padding: var(--space-4xs) var(--space-s);
+        width: 100%;
+        height: auto;
+        min-height: 56px;
+        flex-direction: row;
+        align-items: center;
+        gap: var(--space-s);
+        padding: var(--space-2xs) var(--space-m);
+        /* Light now falls from the top edge of a horizontal bar: drop the
+           right divider, seam the bottom instead. */
+        border-right: none;
+        border-bottom: 1px solid var(--border-muted);
+        overflow: visible;
+        transition: none;
     }
 
-    .siteName,
-    .siteNameSkeleton,
-    .siteFavicon,
-    .workspaceToolbarItems {
-        order: 1;
+    /* Collapsing a top bar to 60px is meaningless — force the expanded look. */
+    .header[data-collapsed="true"] {
+        width: 100%;
     }
 
-    .siteName {
-        max-width: 104px;
-        margin-right: var(--space-4xs);
-    }
-
-    .siteNameSkeleton {
-        width: 84px;
-        margin-right: var(--space-4xs);
-    }
-
-    .workspaceToolbarItems {
-        justify-content: flex-end;
-        flex: 1 1 0;
-    }
-
-    .spacer {
-        min-width: 0;
-    }
-
-    .zoomGroup,
-    .publishActionStatus,
-    .pluginButtonWrapper {
+    .collapseButton {
         display: none;
     }
 
+    .brandGroup {
+        height: auto;
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+
+    .siteName {
+        max-width: 96px;
+        margin-right: 0;
+    }
+
+    /* Nav flows horizontally; the "Workspace" eyebrow has no room in a bar. */
+    .navGroup {
+        flex-direction: row;
+        align-items: center;
+        gap: var(--space-4xs);
+    }
+
+    .navSectionLabel {
+        display: none;
+    }
+
+    /* Nav links collapse to icon-only tiles. */
     .adminLink,
     .activeSection {
-        order: 2;
         justify-content: center;
-        width: 30px;
-        min-width: 30px;
+        width: 32px;
+        min-width: 32px;
         padding: 0;
         gap: 0;
     }
@@ -427,6 +463,25 @@
         overflow: hidden;
         clip: rect(0 0 0 0);
         white-space: nowrap;
+    }
+
+    /* Trailer flows inline; the spacer pushes settings + account to the right. */
+    .workspaceToolbarItems {
+        flex-direction: row;
+        align-items: center;
+        flex: 1 1 auto;
+        min-height: 0;
+        gap: var(--space-4xs);
+    }
+
+    .zoomGroup,
+    .publishActionStatus,
+    .pluginButtonWrapper {
+        display: none;
+    }
+
+    .spacer {
+        min-width: 0;
     }
 }
 

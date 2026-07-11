@@ -18,15 +18,23 @@
     width: var(--panel-w);
     max-height: calc(100vh - 28px);
     overflow: hidden;
+    /* Tier-1 light law: top-lit hairline + specular rim */
     border: 1px solid var(--overlay-10);
     border-radius: var(--panel-radius);
-    background: var(--bg-surface);
+    background:
+        linear-gradient(var(--bg-surface), var(--bg-surface)) padding-box,
+        var(--hairline-lit) border-box;
+    background-color: var(--bg-surface);
     backdrop-filter: blur(var(--panel-blur));
-    box-shadow: var(--shadow-panel);
+    box-shadow: var(--shadow-panel), var(--shadow-specular-rim);
     outline: none;
     transition: width 150ms ease-in-out;
     transform: translateZ(0);
     will-change: transform;
+}
+
+@supports (background-clip: border-box) {
+    .panel { border-color: transparent; }
 }
 
 .panelDocked {

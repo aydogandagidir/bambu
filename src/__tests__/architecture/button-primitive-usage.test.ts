@@ -211,6 +211,14 @@ const ALLOWLIST = new Set([
   // click — the same multi-line custom-layout card class as §8.7 / §8.14 that
   // Button's inline-flex size tokens cannot represent.
   'admin/pages/site/panels/FrameworkPanel/FrameworkHome.tsx',
+
+  // ── §8.16 Password show/hide adornment ───────────────────────────────────
+  // AdminPreAuthForm's password field mounts an icon-only show/hide toggle in
+  // the Input's `trailingSlot` — an adornment sized to sit flush inside the
+  // input's trailing edge. Button's token-driven size system (micro = 18px,
+  // sm = 26px) and its own padding cannot represent a zero-inset input
+  // adornment; same pattern class as the bespoke hit areas above.
+  'admin/preauth/AdminPreAuthForm.tsx',
 ])
 
 // ---------------------------------------------------------------------------

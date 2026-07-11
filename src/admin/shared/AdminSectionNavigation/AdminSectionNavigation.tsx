@@ -32,11 +32,11 @@ import type { AdminWorkspace } from '@admin/workspace'
 import toolbarStyles from '@site/toolbar/Toolbar.module.css'
 
 /**
- * Pixel-art icon used inside an admin nav link. Sized to match the
- * 11px nav-label cap-height — the 13px box leaves the icon visually
- * balanced with the text without crowding the 28px button track.
+ * Pixel-art icon used inside an admin nav link. A 16px box lands the
+ * pixel grid on whole device pixels so the icon renders crisp (13px
+ * fell between the grid and fuzzed), while still fitting the 28px track.
  */
-const NAV_ICON_SIZE = 13
+const NAV_ICON_SIZE = 16
 
 interface AdminSectionNavigationProps {
   section: AdminWorkspace

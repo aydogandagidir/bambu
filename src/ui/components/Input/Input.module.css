@@ -9,6 +9,8 @@
     color: var(--text);
     font-family: var(--font-sans);
     outline: none;
+    /* Bloom the focus ring/border in over ~140ms instead of snapping. */
+    transition: border-color var(--duration) var(--ease), box-shadow var(--duration) var(--ease), background-color var(--duration) var(--ease);
 }
 
 .input:hover {

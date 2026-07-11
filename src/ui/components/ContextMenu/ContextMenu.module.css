@@ -7,10 +7,15 @@
     min-width: var(--context-menu-min-width);
     overflow: hidden;
     padding: var(--space-3xs);
-    border: 0;
+    /* Tier-1 light law: a top-lit hairline edge + specular rim so every menu
+       catches light on its upper edge as it drops in. */
+    border: 1px solid transparent;
     border-radius: var(--card-radius);
-    background: var(--bg-surface-3);
-    box-shadow: 0 12px 28px var(--scrim-50);
+    background:
+        linear-gradient(var(--bg-surface-3), var(--bg-surface-3)) padding-box,
+        var(--hairline-lit) border-box;
+    background-color: var(--bg-surface-3);
+    box-shadow: 0 12px 28px var(--scrim-50), var(--shadow-specular-rim);
     /* Anchor the subtle scale to the menu's top edge — the menu drops down
        from the click point / trigger, so growing from the top reads natural. */
     transform-origin: top center;
