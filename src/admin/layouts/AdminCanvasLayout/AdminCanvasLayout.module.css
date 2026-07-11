@@ -173,6 +173,12 @@
 }
 
 @media (max-width: 760px) {
+  /* Stack the rail (a horizontal top bar at this width) above the editor body,
+     instead of letting it eat 250px beside a squeezed canvas. */
+  .shell {
+    flex-direction: column;
+  }
+
   .importHtmlLoadingDialog.importHtmlLoadingDialog {
     width: min(100%, calc(100vw - 24px));
   }

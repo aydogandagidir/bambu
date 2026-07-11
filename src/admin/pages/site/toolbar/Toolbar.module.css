@@ -394,53 +394,63 @@
     color: var(--success);
 }
 
+/* Phones: the rail becomes a full-width horizontal top bar. Each layout's
+   `.shell` switches to `flex-direction: column` at this same breakpoint, so the
+   bar sits above a full-width page body instead of eating 250px beside it. */
 @media (max-width: 760px) {
     .header {
-        height: 68px;
-        flex-wrap: wrap;
-        align-content: center;
-        row-gap: var(--space-4xs);
-        padding: var(--space-4xs) var(--space-s);
+        width: 100%;
+        height: auto;
+        min-height: 56px;
+        flex-direction: row;
+        align-items: center;
+        gap: var(--space-s);
+        padding: var(--space-2xs) var(--space-m);
+        /* Light now falls from the top edge of a horizontal bar: drop the
+           right divider, seam the bottom instead. */
+        border-right: none;
+        border-bottom: 1px solid var(--border-muted);
+        overflow: visible;
+        transition: none;
     }
 
-    .siteName,
-    .siteNameSkeleton,
-    .siteFavicon,
-    .workspaceToolbarItems {
-        order: 1;
+    /* Collapsing a top bar to 60px is meaningless — force the expanded look. */
+    .header[data-collapsed="true"] {
+        width: 100%;
     }
 
-    .siteName {
-        max-width: 104px;
-        margin-right: var(--space-4xs);
-    }
-
-    .siteNameSkeleton {
-        width: 84px;
-        margin-right: var(--space-4xs);
-    }
-
-    .workspaceToolbarItems {
-        justify-content: flex-end;
-        flex: 1 1 0;
-    }
-
-    .spacer {
-        min-width: 0;
-    }
-
-    .zoomGroup,
-    .publishActionStatus,
-    .pluginButtonWrapper {
+    .collapseButton {
         display: none;
     }
 
+    .brandGroup {
+        height: auto;
+        margin-bottom: 0;
+        flex-shrink: 0;
+    }
+
+    .siteName {
+        max-width: 96px;
+        margin-right: 0;
+    }
+
+    /* Nav flows horizontally; the "Workspace" eyebrow has no room in a bar. */
+    .navGroup {
+        flex-direction: row;
+        align-items: center;
+        gap: var(--space-4xs);
+    }
+
+    .navSectionLabel {
+        display: none;
+    }
+
+    /* Nav links collapse to icon-only tiles. */
     .adminLink,
     .activeSection {
-        order: 2;
         justify-content: center;
-        width: 30px;
-        min-width: 30px;
+        width: 32px;
+        min-width: 32px;
         padding: 0;
         gap: 0;
     }
@@ -453,6 +463,25 @@
         overflow: hidden;
         clip: rect(0 0 0 0);
         white-space: nowrap;
+    }
+
+    /* Trailer flows inline; the spacer pushes settings + account to the right. */
+    .workspaceToolbarItems {
+        flex-direction: row;
+        align-items: center;
+        flex: 1 1 auto;
+        min-height: 0;
+        gap: var(--space-4xs);
+    }
+
+    .zoomGroup,
+    .publishActionStatus,
+    .pluginButtonWrapper {
+        display: none;
+    }
+
+    .spacer {
+        min-width: 0;
     }
 }
 

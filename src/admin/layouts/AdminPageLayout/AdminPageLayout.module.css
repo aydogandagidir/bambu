@@ -137,6 +137,12 @@
 }
 
 @media (max-width: 760px) {
+    /* Stack the rail (now a horizontal top bar) above a full-width body,
+       instead of letting it eat 250px beside the page. */
+    .shell {
+        flex-direction: column;
+    }
+
     .body {
         padding: var(--space-10xl) var(--space-3xl) var(--space-7xl);
     }
