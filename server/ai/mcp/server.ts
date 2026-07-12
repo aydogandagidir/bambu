@@ -36,7 +36,7 @@ const NOOP_BRIDGE: AiBrowserBridge = {
 }
 
 const NO_EDITOR_MESSAGE =
-  'This tool runs in the Instatic editor. Open the site editor in a browser (signed in as the connector owner) and try again.'
+  'This tool runs in the Bambu editor. Open the site editor in a browser (signed in as the connector owner) and try again.'
 
 export function buildMcpServer(ctx: McpServerContext): Server {
   const server = new Server(

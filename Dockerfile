@@ -23,7 +23,7 @@ ARG INSTATIC_VERSION=dev
 ARG INSTATIC_REVISION=unknown
 ARG INSTATIC_CREATED=unknown
 
-LABEL org.opencontainers.image.title="Instatic"
+LABEL org.opencontainers.image.title="Bambu"
 LABEL org.opencontainers.image.description="Self-hosted CMS with an integrated visual editor."
 LABEL org.opencontainers.image.source="https://github.com/corebunch/instatic"
 LABEL org.opencontainers.image.url="https://github.com/corebunch/instatic"
