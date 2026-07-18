@@ -51,8 +51,8 @@ function withRouteBoundary(element: ReactElement): ReactElement {
 export function AdminRoutes() {
   return (
     <Routes>
-      <Route path="/" element={<Navigate to="/admin/dashboard" replace />} />
-      <Route path="/admin" element={<Navigate to="/admin/dashboard" replace />} />
+      <Route path="/" element={<Navigate to="/admin/site" replace />} />
+      <Route path="/admin" element={<Navigate to="/admin/site" replace />} />
       <Route path="/admin/dashboard" element={withRouteBoundary(<AdminEntry section="dashboard" />)} />
       <Route path="/admin/site" element={withRouteBoundary(<AdminEntry section="site" />)} />
       <Route path="/admin/content" element={withRouteBoundary(<AdminEntry section="content" />)} />
@@ -74,7 +74,7 @@ export function AdminRoutes() {
           pipeline's NotFound template) and must never be swallowed by the
           admin SPA. MUST stay the last route: <Routes> takes the first match
           in declaration order. */}
-      <Route path="/admin/*" element={<Navigate to="/admin/dashboard" replace />} />
+      <Route path="/admin/*" element={<Navigate to="/admin/site" replace />} />
     </Routes>
   )
 }
