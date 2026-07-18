@@ -20,8 +20,6 @@ import { registry } from '@core/module-engine'
 import type { CssBundleFile, SiteCssBundleId } from '@core/publisher'
 import { buildPublishedSiteCssBundle } from './publish/siteCssBundle'
 import { mediaStorageRegistry } from '@core/plugins/mediaStorageRegistry'
-import fs from 'node:fs/promises'
-import path from 'node:path'
 
 const VITE_DEV_URL = 'http://localhost:5173'
 
@@ -89,7 +87,7 @@ const routes: readonly RouteHandler[] = [
   tryServeAdminApp,
   tryServePublicRoute,
   trySetupRedirect,
-  tryServeLandingPage,
+  tryRedirectRootToAdmin,
   tryServeNotFoundPage,
 ]
 
@@ -475,25 +473,14 @@ async function tryServeNotFoundPage(req: Request, runtime: ServerRuntime, url: U
 }
 
 /**
- * Fallback landing page for Bambu.
- * Served only at the root path (/) when no CMS page exists (tryServePublicRoute returned null).
+ * Root redirect. With no published homepage, `/` sends the visitor straight to
+ * the admin (which lands on the site editor) instead of a marketing landing —
+ * this is a builder-first instance, not a public marketing site. A published
+ * homepage still wins: `tryServePublicRoute` runs before this and serves it.
  */
-async function tryServeLandingPage(req: Request, runtime: ServerRuntime, url: URL, _pathname: string): Promise<Response | null> {
+async function tryRedirectRootToAdmin(req: Request, _runtime: ServerRuntime, url: URL, _pathname: string): Promise<Response | null> {
   if (req.method !== 'GET' || url.pathname !== '/') return null
-  
-  let htmlPath = ''
-  if (runtime.staticDir) {
-    htmlPath = path.join(runtime.staticDir, 'bambu-landing.html')
-  } else {
-    htmlPath = path.join(process.cwd(), 'public', 'bambu-landing.html')
-  }
-  
-  try {
-    const html = await fs.readFile(htmlPath, 'utf-8')
-    return new Response(html, { headers: { 'content-type': 'text/html; charset=utf-8' } })
-  } catch (err) {
-    return null
-  }
+  return new Response(null, { status: 302, headers: { location: '/admin' } })
 }
 
 // ---------------------------------------------------------------------------
